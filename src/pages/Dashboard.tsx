@@ -130,6 +130,17 @@ const Dashboard = () => {
                       Using customer purchase history, market trends, and brand data to optimize predictions
                     </p>
                   </div>
+                  <div className="p-4 border rounded bg-blue-50 border-blue-200">
+                    <p className="text-blue-800">
+                      Shopify Plus metafields: <span className="font-medium">Ready to configure</span>
+                    </p>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Set up Shopify Plus metafields to display product lifespan data on your store
+                    </p>
+                    <Link href="#" onClick={() => document.querySelector('[value="website"]')?.dispatchEvent(new Event('click'))} className="text-blue-600 hover:underline mt-2 inline-block">
+                      Configure metafields
+                    </Link>
+                  </div>
                 </div>
               </Card>
             </TabsContent>
