@@ -9,6 +9,7 @@ import ProductAnalytics from "@/components/ProductAnalytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import AppNavigation from "@/components/AppNavigation";
+import { Globe, Settings as SettingsIcon, Database, Mail, MessageSquare, LineChart, Lightbulb } from "lucide-react";
 
 const Dashboard = () => {
   const handleRefreshData = () => {
@@ -32,14 +33,35 @@ const Dashboard = () => {
 
         <Layout>
           <Tabs defaultValue="products" className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="products">Products</TabsTrigger>
-              <TabsTrigger value="ai-recommendations">AI Recommendations</TabsTrigger>
-              <TabsTrigger value="emails">Email Templates</TabsTrigger>
-              <TabsTrigger value="feedback">Customer Feedback</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="website">Website Integration</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsList className="mb-6 flex flex-wrap">
+              <TabsTrigger value="products" className="flex items-center gap-1">
+                <Database size={16} />
+                <span>Products</span>
+              </TabsTrigger>
+              <TabsTrigger value="ai-recommendations" className="flex items-center gap-1">
+                <Lightbulb size={16} />
+                <span>AI Recommendations</span>
+              </TabsTrigger>
+              <TabsTrigger value="emails" className="flex items-center gap-1">
+                <Mail size={16} />
+                <span>Email Templates</span>
+              </TabsTrigger>
+              <TabsTrigger value="feedback" className="flex items-center gap-1">
+                <MessageSquare size={16} />
+                <span>Customer Feedback</span>
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-1">
+                <LineChart size={16} />
+                <span>Analytics</span>
+              </TabsTrigger>
+              <TabsTrigger value="website" className="flex items-center gap-1">
+                <Globe size={16} />
+                <span>Website Integration</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-1">
+                <SettingsIcon size={16} />
+                <span>Settings</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="products">
