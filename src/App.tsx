@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import CustomerMyReplenishments from "./pages/CustomerMyReplenishments";
 import Documentation from "./pages/Documentation";
+import ValueMetricsSystem from "./components/ValueMetricsSystem";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/my-replenishments" element={<CustomerMyReplenishments />} />
           <Route path="/documentation" element={<Documentation />} />
+          <Route path="/value-metrics" element={<ValueMetricsSystem />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
