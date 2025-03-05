@@ -5,6 +5,7 @@ import ProductLifespanTable from "@/components/ProductLifespanTable";
 import EmailPreview from "@/components/EmailPreview";
 import AIProductLifespanRecommendations from "@/components/AIProductLifespanRecommendations";
 import CustomerFeedbackEmails from "@/components/CustomerFeedbackEmails";
+import ProductAnalytics from "@/components/ProductAnalytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import AppNavigation from "@/components/AppNavigation";
@@ -36,8 +37,9 @@ const Dashboard = () => {
               <TabsTrigger value="ai-recommendations">AI Recommendations</TabsTrigger>
               <TabsTrigger value="emails">Email Templates</TabsTrigger>
               <TabsTrigger value="feedback">Customer Feedback</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="website">Website Integration</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             <TabsContent value="products">
@@ -82,6 +84,24 @@ const Dashboard = () => {
               </Card>
             </TabsContent>
 
+            <TabsContent value="analytics">
+              <Card className="mb-8 p-6">
+                <Heading className="text-xl font-medium mb-6">Performance Analytics</Heading>
+                <Text className="mb-6">
+                  Track reminder email performance, subscription conversion rates, and replenishment metrics.
+                </Text>
+                <div className="p-4 border rounded bg-gray-50 border-gray-200 text-center">
+                  <p className="text-gray-500">Analytics dashboard will be available after sending your first reminder campaign</p>
+                </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="website">
+              <Card className="mb-8 p-6">
+                <ProductAnalytics />
+              </Card>
+            </TabsContent>
+
             <TabsContent value="settings">
               <Card className="mb-8 p-6">
                 <Heading className="text-xl font-medium mb-6">App Settings</Heading>
@@ -110,18 +130,6 @@ const Dashboard = () => {
                       Using customer purchase history, market trends, and brand data to optimize predictions
                     </p>
                   </div>
-                </div>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="analytics">
-              <Card className="mb-8 p-6">
-                <Heading className="text-xl font-medium mb-6">Performance Analytics</Heading>
-                <Text className="mb-6">
-                  Track reminder email performance, subscription conversion rates, and replenishment metrics.
-                </Text>
-                <div className="p-4 border rounded bg-gray-50 border-gray-200 text-center">
-                  <p className="text-gray-500">Analytics dashboard will be available after sending your first reminder campaign</p>
                 </div>
               </Card>
             </TabsContent>
