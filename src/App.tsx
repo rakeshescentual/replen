@@ -11,6 +11,7 @@ import Settings from "./pages/Settings";
 import CustomerMyReplenishments from "./pages/CustomerMyReplenishments";
 import Documentation from "./pages/Documentation";
 import ValueMetricsSystem from "./components/ValueMetricsSystem";
+import ValueComparison from "./pages/ValueComparison";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/my-replenishments" element={<CustomerMyReplenishments />} />
           <Route path="/documentation" element={<Documentation />} />
           <Route path="/value-metrics" element={<ValueMetricsSystem />} />
+          <Route path="/value-comparison" element={<ValueComparison />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 // Types for our prediction models
@@ -260,5 +259,86 @@ export class PredictiveAnalysisService {
       avgRepurchaseRate: 0.7,
       marketTrends: ["Personalization", "Subscription services"]
     };
+  }
+
+  /**
+   * Get bundle recommendations based on product synergy
+   */
+  public static async getBundleRecommendations(
+    productId: string,
+    category: string
+  ): Promise<any[]> {
+    console.log(`Getting bundle recommendations for product ${productId} in category ${category}`);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // In a real implementation, this would use ML to find complementary products
+    // For now, simulate with mock data
+    return [
+      {
+        bundleId: "b1",
+        products: [
+          { id: "p1", title: "Product 1", price: 49.99, valueScore: 82 },
+          { id: "p2", title: "Product 2", price: 39.99, valueScore: 78 },
+          { id: "p3", title: "Product 3", price: 59.99, valueScore: 85 }
+        ],
+        combinedValue: 89,
+        totalPrice: 149.97,
+        bundlePrice: 129.99,
+        synergisticEffects: ["Enhanced hydration", "Improved absorption", "Complementary ingredients"]
+      }
+    ];
+  }
+
+  /**
+   * Calculate repurchase likelihood based on usage patterns
+   */
+  public static calculateRepurchaseLikelihood(
+    customerData: any,
+    productId: string
+  ): number {
+    // In a real implementation, this would use ML to predict likelihood
+    // For now, return a random score between 65-95
+    return Math.floor(65 + Math.random() * 30);
+  }
+
+  /**
+   * Get customer segment based on value preferences
+   */
+  public static getCustomerValueSegment(
+    customerPurchaseHistory: any[]
+  ): string {
+    // In a real implementation, this would analyze purchase patterns
+    // For now, return a random segment
+    const segments = [
+      "Value Conscious Premium",
+      "Luxury Experience Seeker",
+      "Ingredient Focused",
+      "Results Driven"
+    ];
+    
+    return segments[Math.floor(Math.random() * segments.length)];
+  }
+
+  /**
+   * Calculate value score improvement for a subscription
+   */
+  public static calculateSubscriptionValueImprovement(
+    regularPrice: number,
+    subscriptionPrice: number,
+    optimalInterval: number,
+    selectedInterval: number
+  ): number {
+    // Base discount value improvement
+    const discountImprovement = ((regularPrice - subscriptionPrice) / regularPrice) * 100;
+    
+    // Interval optimization factor
+    // (closer to optimal = better value)
+    const intervalDifference = Math.abs(optimalInterval - selectedInterval);
+    const intervalFactor = Math.max(0, 10 - (intervalDifference / 5));
+    
+    // Combined improvement capped at 20%
+    return Math.min(20, Math.round(discountImprovement + intervalFactor));
   }
 }

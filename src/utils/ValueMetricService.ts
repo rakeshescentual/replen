@@ -1,4 +1,3 @@
-
 import { ShopifyMetafieldService, ProductMetafields } from './ShopifyMetafieldService';
 import { toast } from "@/hooks/use-toast";
 
@@ -903,5 +902,122 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
     `;
+  }
+  
+  /**
+   * Get personalized value recommendations for a customer
+   */
+  public static async getPersonalizedRecommendations(
+    customerId: string,
+    preferences: string[]
+  ): Promise<any[]> {
+    console.log(`Getting personalized recommendations for customer ${customerId} with preferences ${preferences.join(', ')}`);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // In a real implementation, this would call an AI/ML service
+    // For now, return mock recommendations
+    return [
+      {
+        id: "rec1",
+        productId: "p1",
+        title: "Premium Facial Serum",
+        price: 89.99,
+        valueScore: 87,
+        matchScore: 94,
+        reasonForRecommendation: "Based on your skin type and previous purchases"
+      },
+      {
+        id: "rec2",
+        productId: "p2",
+        title: "Luxury Night Cream",
+        price: 65.99,
+        valueScore: 84,
+        matchScore: 91,
+        reasonForRecommendation: "Complements your current routine"
+      }
+    ];
+  }
+  
+  /**
+   * Get value-optimized product bundles
+   */
+  public static async getValueBundles(): Promise<any[]> {
+    console.log(`Fetching value-optimized product bundles`);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // In a real implementation, this would query a recommendation engine
+    // For now, return mock bundles
+    return [
+      {
+        id: "b1",
+        title: "Anti-Aging Bundle",
+        products: ["p1", "p2", "p3"],
+        totalValue: 230.97,
+        bundlePrice: 189.99,
+        combinedValueScore: 89,
+        savingsPercentage: 18
+      },
+      {
+        id: "b2",
+        title: "Hydration Essentials",
+        products: ["p4", "p5", "p6"],
+        totalValue: 154.97,
+        bundlePrice: 129.99,
+        combinedValueScore: 85,
+        savingsPercentage: 16
+      }
+    ];
+  }
+  
+  /**
+   * Calculate optimal subscription intervals based on product lifespan and usage patterns
+   */
+  public static calculateOptimalSubscriptionInterval(
+    estimatedLifespan: number,
+    usageFrequency: number = 1, // times per day
+    safetyBuffer: number = 5 // days before running out
+  ): number {
+    // Basic calculation: lifespan - safety buffer
+    const optimalInterval = Math.max(15, estimatedLifespan - safetyBuffer);
+    
+    // Round to nearest standard interval
+    const standardIntervals = [15, 30, 45, 60, 90];
+    return standardIntervals.reduce((prev, curr) => {
+      return Math.abs(curr - optimalInterval) < Math.abs(prev - optimalInterval) ? curr : prev;
+    });
+  }
+  
+  /**
+   * Generate Liquid code for value comparison tool
+   */
+  public static generateValueComparisonLiquid(): string {
+    return `
+{% comment %}
+  Escentual Value Comparison Tool - Add to compare-products.liquid
+  Requires metafields with namespace: escentual_value
+{% endcomment %}
+
+<!-- Value Comparison UI code would go here -->
+<!-- This would be similar to the comparison tool component -->
+  `;
+  }
+  
+  /**
+   * Generate Liquid code for premium value educational content
+   */
+  public static generatePremiumValueEducationLiquid(): string {
+    return `
+{% comment %}
+  Escentual Premium Value Education - Add to product-template.liquid
+  Helps customers understand the premium value proposition
+{% endcomment %}
+
+<!-- Premium Value Education UI code would go here -->
+<!-- This would explain why premium products offer better long-term value -->
+  `;
   }
 }
