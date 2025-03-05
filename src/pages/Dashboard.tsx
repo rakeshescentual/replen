@@ -3,8 +3,10 @@ import React from "react";
 import { Card, Heading, Text, Page, Layout, Link } from "@/components/ui/shadcn";
 import ProductLifespanTable from "@/components/ProductLifespanTable";
 import EmailPreview from "@/components/EmailPreview";
+import AIProductLifespanRecommendations from "@/components/AIProductLifespanRecommendations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
+import AppNavigation from "@/components/AppNavigation";
 
 const Dashboard = () => {
   const handleRefreshData = () => {
@@ -17,6 +19,7 @@ const Dashboard = () => {
 
   return (
     <Page className="bg-gray-50 min-h-screen">
+      <AppNavigation />
       <div className="container mx-auto py-8 px-4">
         <header className="mb-8">
           <Heading className="text-3xl font-bold mb-2">Replenish Reminder</Heading>
@@ -29,6 +32,7 @@ const Dashboard = () => {
           <Tabs defaultValue="products" className="w-full">
             <TabsList className="mb-6">
               <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="ai-recommendations">AI Recommendations</TabsTrigger>
               <TabsTrigger value="emails">Email Templates</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -50,6 +54,12 @@ const Dashboard = () => {
                   customers receive replenishment reminders.
                 </Text>
                 <ProductLifespanTable />
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="ai-recommendations">
+              <Card className="mb-8 p-6">
+                <AIProductLifespanRecommendations />
               </Card>
             </TabsContent>
 
@@ -82,6 +92,14 @@ const Dashboard = () => {
                   <div className="p-4 border rounded bg-green-50 border-green-200">
                     <p className="text-green-800">
                       Shopify data connection: <span className="font-medium">Connected</span>
+                    </p>
+                  </div>
+                  <div className="p-4 border rounded bg-green-50 border-green-200">
+                    <p className="text-green-800">
+                      AI prediction system: <span className="font-medium">Active</span>
+                    </p>
+                    <p className="text-sm text-green-700 mt-1">
+                      Using customer purchase history, market trends, and brand data to optimize predictions
                     </p>
                   </div>
                 </div>
