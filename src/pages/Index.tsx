@@ -15,6 +15,14 @@ const Index = () => {
             <Text className="text-xl text-gray-600">
               Never run out of your essential products again
             </Text>
+            <div className="mt-4">
+              <Link
+                to="/documentation"
+                className="text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                View documentation
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
