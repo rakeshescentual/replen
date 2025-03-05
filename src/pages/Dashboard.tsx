@@ -4,6 +4,7 @@ import { Card, Heading, Text, Page, Layout, Link } from "@/components/ui/shadcn"
 import ProductLifespanTable from "@/components/ProductLifespanTable";
 import EmailPreview from "@/components/EmailPreview";
 import AIProductLifespanRecommendations from "@/components/AIProductLifespanRecommendations";
+import CustomerFeedbackEmails from "@/components/CustomerFeedbackEmails";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import AppNavigation from "@/components/AppNavigation";
@@ -34,6 +35,7 @@ const Dashboard = () => {
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="ai-recommendations">AI Recommendations</TabsTrigger>
               <TabsTrigger value="emails">Email Templates</TabsTrigger>
+              <TabsTrigger value="feedback">Customer Feedback</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
@@ -71,6 +73,12 @@ const Dashboard = () => {
                   Klaviyo when products are predicted to be near depletion.
                 </Text>
                 <EmailPreview />
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="feedback">
+              <Card className="mb-8 p-6">
+                <CustomerFeedbackEmails />
               </Card>
             </TabsContent>
 
