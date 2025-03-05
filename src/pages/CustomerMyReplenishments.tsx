@@ -1,8 +1,10 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, Heading, Text, Page, Layout, Link } from "@/components/ui/shadcn";
 import AppNavigation from "@/components/AppNavigation";
 import { toast } from "@/hooks/use-toast";
+import SmartNotificationCard from "@/components/SmartNotificationCard";
+import ProductTimeline from "@/components/ProductTimeline";
 
 const CustomerMyReplenishments = () => {
   // Mock data - in a real app this would come from the Shopify Customer API
@@ -15,7 +17,13 @@ const CustomerMyReplenishments = () => {
       daysRemaining: 12,
       image: "https://placehold.co/60x60",
       isSubscription: true,
-      nextDeliveryDate: "2023-07-10"
+      nextDeliveryDate: "2023-07-10",
+      usagePattern: "Consistent",
+      purchaseHistory: [
+        { date: "2023-01-15", quantity: 1 },
+        { date: "2023-03-15", quantity: 1 },
+        { date: "2023-06-15", quantity: 1 }
+      ]
     },
     {
       id: "2",
@@ -25,7 +33,12 @@ const CustomerMyReplenishments = () => {
       daysRemaining: 38,
       image: "https://placehold.co/60x60",
       isSubscription: false,
-      nextDeliveryDate: null
+      nextDeliveryDate: null,
+      usagePattern: "Variable",
+      purchaseHistory: [
+        { date: "2023-02-10", quantity: 1 },
+        { date: "2023-05-10", quantity: 2 }
+      ]
     },
     {
       id: "3",
@@ -35,9 +48,33 @@ const CustomerMyReplenishments = () => {
       daysRemaining: 28,
       image: "https://placehold.co/60x60",
       isSubscription: false,
-      nextDeliveryDate: null
+      nextDeliveryDate: null,
+      usagePattern: "Decreasing",
+      purchaseHistory: [
+        { date: "2022-12-01", quantity: 1 },
+        { date: "2023-03-01", quantity: 1 },
+        { date: "2023-06-01", quantity: 1 }
+      ]
     }
   ];
+
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailNotifications: true,
+    reminderFrequency: "running-low",
+    reminderThreshold: "1-week"
+  });
+
+  const handleSettingsChange = (setting: string, value: string | boolean) => {
+    setNotificationSettings(prev => ({
+      ...prev,
+      [setting]: value
+    }));
+    
+    toast({
+      title: "Settings Updated",
+      description: "Your notification preferences have been saved"
+    });
+  };
 
   const handleSubscribe = (productId: string) => {
     toast({
@@ -53,6 +90,9 @@ const CustomerMyReplenishments = () => {
     });
   };
 
+  // Get products that need attention (running out soon)
+  const productsNeedingAttention = replenishments.filter(item => item.daysRemaining < 15 && !item.isSubscription);
+
   return (
     <Page className="bg-gray-50 min-h-screen">
       <AppNavigation />
@@ -64,11 +104,22 @@ const CustomerMyReplenishments = () => {
           </Text>
         </header>
 
+        {productsNeedingAttention.length > 0 && (
+          <SmartNotificationCard 
+            products={productsNeedingAttention} 
+            onReorder={handleReorder}
+            onSubscribe={handleSubscribe}
+          />
+        )}
+
         <Layout className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <Card className="p-6 mb-6">
               <Heading className="text-xl font-medium mb-4">Product Replenishment Timeline</Heading>
-              <div className="space-y-4">
+              
+              <ProductTimeline replenishments={replenishments} />
+              
+              <div className="space-y-4 mt-6">
                 {replenishments.map((item) => (
                   <div key={item.id} className="border rounded-lg p-4 flex items-start hover:shadow-md transition-shadow">
                     <img src={item.image} alt={item.productTitle} className="w-16 h-16 rounded object-cover mr-4" />
@@ -144,28 +195,45 @@ const CustomerMyReplenishments = () => {
                     <p className="font-medium">Email Reminders</p>
                     <p className="text-sm text-gray-600">Receive email notifications when products are running low</p>
                   </div>
-                  <div className="relative inline-block w-12 h-6 border-2 rounded-full cursor-pointer bg-green-500 border-green-500">
-                    <span className="absolute w-5 h-5 bg-white rounded-full right-0.5 top-0.5"></span>
+                  <div 
+                    className={`relative inline-block w-12 h-6 border-2 rounded-full cursor-pointer ${
+                      notificationSettings.emailNotifications ? "bg-green-500 border-green-500" : "bg-gray-300 border-gray-300"
+                    }`}
+                    onClick={() => handleSettingsChange('emailNotifications', !notificationSettings.emailNotifications)}
+                  >
+                    <span 
+                      className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-all ${
+                        notificationSettings.emailNotifications ? "right-0.5" : "left-0.5"
+                      }`}
+                    ></span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <p className="font-medium">Reminder Frequency</p>
                   <p className="text-sm text-gray-600">How often you'd like to receive reminder notifications</p>
-                  <select className="w-full border rounded p-2">
-                    <option>Only when running low</option>
-                    <option>Weekly summary</option>
-                    <option>Monthly summary</option>
+                  <select 
+                    className="w-full border rounded p-2"
+                    value={notificationSettings.reminderFrequency}
+                    onChange={(e) => handleSettingsChange('reminderFrequency', e.target.value)}
+                  >
+                    <option value="running-low">Only when running low</option>
+                    <option value="weekly">Weekly summary</option>
+                    <option value="monthly">Monthly summary</option>
                   </select>
                 </div>
 
                 <div className="space-y-3">
                   <p className="font-medium">Reminder Threshold</p>
                   <p className="text-sm text-gray-600">When should we notify you that a product is running low?</p>
-                  <select className="w-full border rounded p-2">
-                    <option>When less than 1 week remains</option>
-                    <option>When less than 2 weeks remain</option>
-                    <option>When less than 3 weeks remain</option>
+                  <select 
+                    className="w-full border rounded p-2"
+                    value={notificationSettings.reminderThreshold}
+                    onChange={(e) => handleSettingsChange('reminderThreshold', e.target.value)}
+                  >
+                    <option value="1-week">When less than 1 week remains</option>
+                    <option value="2-weeks">When less than 2 weeks remain</option>
+                    <option value="3-weeks">When less than 3 weeks remain</option>
                   </select>
                 </div>
 
