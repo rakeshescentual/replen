@@ -1,3 +1,4 @@
+
 export interface ProductMetafields {
   average_lifespan: number;
   cost_per_day: number;

@@ -12,6 +12,7 @@ import CustomerMyReplenishments from "./pages/CustomerMyReplenishments";
 import Documentation from "./pages/Documentation";
 import ValueMetricsSystem from "./components/ValueMetricsSystem";
 import ValueComparison from "./pages/ValueComparison";
+import AIProductLifespanRecommendations from "./components/AIProductLifespanRecommendations";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/documentation" element={<Documentation />} />
           <Route path="/value-metrics" element={<ValueMetricsSystem />} />
           <Route path="/value-comparison" element={<ValueComparison />} />
+          <Route path="/ai-lifespan-recommendations" element={<AIProductLifespanRecommendations />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
