@@ -1,1059 +1,618 @@
 
-import React, { useState } from 'react';
-import { Card, Heading, Text } from "@/components/ui/shadcn";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Code, FileCode, RefreshCw, Mail, Database, ServerOff, Server, AlertTriangle } from "lucide-react";
+import React from "react";
+import { Card, Code, Heading, Text } from "@/components/ui/shadcn";
+import { Separator } from "@/components/ui/separator";
 
 const IntegrationPointsDocs = () => {
-  const [activeTab, setActiveTab] = useState('gadget');
-  
   return (
     <div className="space-y-8">
       <Card className="p-6">
-        <Heading className="text-2xl font-bold mb-4">Integration Points Documentation</Heading>
-        <Text className="mb-6">
-          The Replenish Reminder app integrates with several key platforms to provide a seamless experience. 
-          This documentation outlines the integration points, data flows, and implementation details.
+        <Heading className="text-2xl font-bold mb-4">Integration Overview</Heading>
+        <Text className="mb-4">
+          Replenish Reminder integrates with three primary platforms to deliver a seamless replenishment experience:
         </Text>
+        <ul className="list-disc pl-5 space-y-2 mb-6">
+          <li className="text-gray-700">
+            <strong>Shopify:</strong> Core e-commerce platform for product data, customer information, and subscription management
+          </li>
+          <li className="text-gray-700">
+            <strong>Klaviyo:</strong> Email marketing platform for sending personalized reminder emails and tracking engagement
+          </li>
+          <li className="text-gray-700">
+            <strong>Gadget.dev:</strong> Backend service for processing data, managing integration workflows, and custom business logic
+          </li>
+        </ul>
+        <Text className="text-sm text-gray-500">
+          This document provides detailed technical documentation on the integration points, API usage, and data flow between these platforms.
+        </Text>
+      </Card>
+
+      {/* Shopify Integration Section */}
+      <Card className="p-6">
+        <Heading className="text-2xl font-bold mb-4">Shopify Integration</Heading>
+        <div className="space-y-6">
+          <div>
+            <Heading className="text-lg font-semibold mb-2">API Overview</Heading>
+            <Text className="mb-2">
+              Replenish Reminder uses the following Shopify APIs:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>GraphQL Admin API:</strong> For accessing product, order, and customer data
+              </li>
+              <li className="text-gray-700">
+                <strong>REST Admin API:</strong> For certain operations not available in the GraphQL API
+              </li>
+              <li className="text-gray-700">
+                <strong>Subscription API:</strong> For managing and tracking customer subscriptions
+              </li>
+              <li className="text-gray-700">
+                <strong>Metafield API:</strong> For storing product lifespan data and custom attributes
+              </li>
+            </ul>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Authentication</Heading>
+            <Text className="mb-4">
+              Authentication is performed using OAuth 2.0 with the following scopes:
+            </Text>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mb-4">
+{`// Required OAuth Scopes
+read_products, write_products
+read_customers, write_customers
+read_orders, write_orders
+read_content, write_content
+read_merchant_managed_fulfillment_orders
+read_shopify_payments_payouts
+read_shopify_payments_disputes`}
+            </Code>
+            <Text className="text-sm text-gray-600">
+              The app uses a server-to-server access token for background operations and user-specific tokens for admin interface actions.
+            </Text>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Product Data Flow</Heading>
+            <Text className="mb-2">
+              The app retrieves product data through the following process:
+            </Text>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li className="text-gray-700">
+                Query all product data using GraphQL Admin API
+              </li>
+              <li className="text-gray-700">
+                Extract relevant product information (title, SKU, metafields)
+              </li>
+              <li className="text-gray-700">
+                Store product lifespan data in dedicated metafields
+              </li>
+              <li className="text-gray-700">
+                Sync product data to Gadget.dev and Klaviyo
+              </li>
+            </ol>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+{`// Example GraphQL Query for Products
+query {
+  products(first: 50) {
+    edges {
+      node {
+        id
+        title
+        handle
+        description
+        variants(first: 10) {
+          edges {
+            node {
+              id
+              title
+              sku
+              price
+              inventoryQuantity
+            }
+          }
+        }
+        metafields(first: 10, namespace: "replenish_reminder") {
+          edges {
+            node {
+              id
+              namespace
+              key
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+}`}
+            </Code>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Customer Account Integration</Heading>
+            <Text className="mb-4">
+              The "My Replenishments" section is integrated into customer accounts using Liquid templates and JavaScript for dynamic content.
+            </Text>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm">
+{`<!-- Example Liquid Template for My Replenishments -->
+<div id="my-replenishments">
+  <h2>{{ 'customer.replenishments.title' | t }}</h2>
+  
+  <div class="loading-spinner" id="replenishment-loader">
+    <!-- Loading animation -->
+  </div>
+  
+  <div id="replenishment-content" style="display: none;">
+    <!-- Content dynamically loaded via JavaScript -->
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Fetch customer replenishment data
+    fetch('/apps/replenish-reminder/customer/data')
+      .then(response => response.json())
+      .then(data => {
+        // Render replenishment data
+        document.getElementById('replenishment-content').innerHTML = 
+          generateReplenishmentHTML(data);
         
-        <Tabs defaultValue="gadget" onValueChange={setActiveTab}>
-          <TabsList className="mb-6 flex flex-wrap gap-2">
-            <TabsTrigger value="gadget">Gadget.dev</TabsTrigger>
-            <TabsTrigger value="klaviyo">Klaviyo</TabsTrigger>
-            <TabsTrigger value="shopify">Shopify</TabsTrigger>
-            <TabsTrigger value="architecture">System Architecture</TabsTrigger>
-          </TabsList>
+        // Hide loader, show content
+        document.getElementById('replenishment-loader').style.display = 'none';
+        document.getElementById('replenishment-content').style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error loading replenishment data:', error);
+      });
+  });
+</script>`}
+            </Code>
+          </div>
+        </div>
+      </Card>
+
+      {/* Klaviyo Integration Section */}
+      <Card className="p-6">
+        <Heading className="text-2xl font-bold mb-4">Klaviyo Integration</Heading>
+        <div className="space-y-6">
+          <div>
+            <Heading className="text-lg font-semibold mb-2">API Overview</Heading>
+            <Text className="mb-2">
+              The app integrates with Klaviyo for all email communication using:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>Klaviyo REST API v2:</strong> For customer profile management and metrics
+              </li>
+              <li className="text-gray-700">
+                <strong>Klaviyo API v3:</strong> For campaigns, templates, and newer features
+              </li>
+            </ul>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Customer Data Sync</Heading>
+            <Text className="mb-4">
+              Customer profiles are synchronized with Klaviyo through:
+            </Text>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li className="text-gray-700">
+                Creating/updating profiles with customer information
+              </li>
+              <li className="text-gray-700">
+                Adding custom properties for replenishment dates
+              </li>
+              <li className="text-gray-700">
+                Syncing purchase history and product preferences
+              </li>
+              <li className="text-gray-700">
+                Tracking engagement with reminder emails
+              </li>
+            </ol>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+{`// Example Klaviyo Profile Update
+const updateKlaviyoProfile = async (customer, replenishmentData) => {
+  const profileData = {
+    email: customer.email,
+    phone_number: customer.phone,
+    first_name: customer.firstName,
+    last_name: customer.lastName,
+    properties: {
+      replenishment_products: replenishmentData,
+      next_replenishment_date: calculateNextDate(replenishmentData),
+      total_replenishment_value: calculateTotalValue(replenishmentData),
+      shopify_customer_id: customer.id,
+      $source: "Replenish Reminder App"
+    }
+  };
+
+  return await klaviyoClient.profiles.createOrUpdate(profileData);
+};`}
+            </Code>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Email Campaigns</Heading>
+            <Text className="mb-2">
+              The app manages three types of reminder emails:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>Monthly Replenishment Reminders:</strong> Sent at the beginning of each month
+              </li>
+              <li className="text-gray-700">
+                <strong>Product-Specific Reminders:</strong> Sent based on predicted depletion dates
+              </li>
+              <li className="text-gray-700">
+                <strong>Subscription Recommendations:</strong> Sent to customers with repeated purchases
+              </li>
+            </ul>
+            <Text className="mt-4 mb-2">
+              Email campaigns are created using Klaviyo's API:
+            </Text>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm">
+{`// Example Campaign Creation
+const createReminderCampaign = async (templateId, segmentId, sendDate) => {
+  const campaignData = {
+    name: "Monthly Replenishment Reminder - " + formatDate(sendDate),
+    template_id: templateId,
+    list_id: segmentId,
+    send_options: {
+      scheduled_date: sendDate.toISOString()
+    }
+  };
+
+  return await klaviyoClient.campaigns.create(campaignData);
+};`}
+            </Code>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Event Tracking</Heading>
+            <Text className="mb-4">
+              The app tracks custom metrics in Klaviyo:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>Viewed Replenishment Reminder:</strong> When a customer opens a reminder email
+              </li>
+              <li className="text-gray-700">
+                <strong>Clicked Replenishment Product:</strong> When a customer clicks on a product in the email
+              </li>
+              <li className="text-gray-700">
+                <strong>Completed Replenishment Purchase:</strong> When a customer makes a purchase from a reminder
+              </li>
+            </ul>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+{`// Example Event Tracking
+const trackReplenishmentPurchase = async (customer, orderData, source) => {
+  const eventData = {
+    event: "Completed Replenishment Purchase",
+    customer_properties: {
+      $email: customer.email,
+      $first_name: customer.firstName,
+      $last_name: customer.lastName
+    },
+    properties: {
+      source: source,
+      order_id: orderData.id,
+      value: orderData.totalPrice,
+      products: orderData.lineItems.map(item => ({
+        product_id: item.productId,
+        variant_id: item.variantId,
+        quantity: item.quantity,
+        name: item.title,
+        price: item.price
+      }))
+    }
+  };
+
+  return await klaviyoClient.events.track(eventData);
+};`}
+            </Code>
+          </div>
+        </div>
+      </Card>
+
+      {/* Gadget.dev Integration Section */}
+      <Card className="p-6">
+        <Heading className="text-2xl font-bold mb-4">Gadget.dev Integration</Heading>
+        <div className="space-y-6">
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Platform Overview</Heading>
+            <Text className="mb-4">
+              Gadget.dev serves as the backend service layer for Replenish Reminder, managing:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>Data Synchronization:</strong> Between Shopify and Klaviyo
+              </li>
+              <li className="text-gray-700">
+                <strong>Business Logic:</strong> Product lifespan calculations and reminder scheduling
+              </li>
+              <li className="text-gray-700">
+                <strong>API Gateway:</strong> Unified interface for the frontend application
+              </li>
+              <li className="text-gray-700">
+                <strong>Scheduled Jobs:</strong> Automated processes for data updates and email sends
+              </li>
+            </ul>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Data Models</Heading>
+            <Text className="mb-4">
+              The following data models are defined in Gadget.dev:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>Product:</strong> Extends Shopify product with lifespan data
+              </li>
+              <li className="text-gray-700">
+                <strong>Customer:</strong> Extends Shopify customer with replenishment preferences
+              </li>
+              <li className="text-gray-700">
+                <strong>ReplenishmentRecord:</strong> Tracks customer product purchases and predicted depletion
+              </li>
+              <li className="text-gray-700">
+                <strong>ReminderEvent:</strong> Logs all reminder emails sent and customer interactions
+              </li>
+            </ul>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+{`// Example Gadget.dev Data Model
+export const ReplenishmentRecord = gadget.recordType("ReplenishmentRecord", {
+  fields: {
+    customer: {
+      type: gadget.relationships.belongsTo(Customer),
+      required: true
+    },
+    product: {
+      type: gadget.relationships.belongsTo(Product),
+      required: true
+    },
+    purchaseDate: {
+      type: "date",
+      required: true
+    },
+    estimatedDepletionDate: {
+      type: "date",
+      required: true
+    },
+    actualDepletionDate: {
+      type: "date",
+      required: false
+    },
+    repurchased: {
+      type: "boolean",
+      defaultValue: false
+    },
+    remindersSent: {
+      type: "number",
+      defaultValue: 0
+    },
+    lastReminderDate: {
+      type: "date",
+      required: false
+    }
+  }
+});`}
+            </Code>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">API Endpoints</Heading>
+            <Text className="mb-4">
+              The app exposes the following API endpoints through Gadget.dev:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>/api/customer-replenishments:</strong> Get all replenishments for a customer
+              </li>
+              <li className="text-gray-700">
+                <strong>/api/product-lifespan:</strong> Get or update product lifespan data
+              </li>
+              <li className="text-gray-700">
+                <strong>/api/trigger-reminder:</strong> Manually trigger a reminder email
+              </li>
+              <li className="text-gray-700">
+                <strong>/api/analytics:</strong> Get reminder performance metrics
+              </li>
+            </ul>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+{`// Example API Endpoint in Gadget.dev
+export const getCustomerReplenishments = gadget.api.get(
+  "/api/customer-replenishments",
+  {
+    params: {
+      customerId: {
+        type: "string",
+        required: true
+      }
+    },
+    authentication: {
+      required: true
+    },
+    response: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          productId: { type: "string" },
+          productTitle: { type: "string" },
+          purchaseDate: { type: "string", format: "date-time" },
+          estimatedDepletionDate: { type: "string", format: "date-time" },
+          daysRemaining: { type: "number" }
+        }
+      }
+    }
+  },
+  async ({ params, authentication }) => {
+    // Implementation to fetch customer replenishments
+    const records = await ReplenishmentRecord.findMany({
+      where: {
+        customer: {
+          shopifyCustomerId: params.customerId
+        }
+      },
+      include: {
+        product: true
+      }
+    });
+
+    return records.map(record => ({
+      id: record.id,
+      productId: record.product.shopifyProductId,
+      productTitle: record.product.title,
+      purchaseDate: record.purchaseDate,
+      estimatedDepletionDate: record.estimatedDepletionDate,
+      daysRemaining: calculateDaysRemaining(record.estimatedDepletionDate)
+    }));
+  }
+);`}
+            </Code>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Heading className="text-lg font-semibold mb-2">Scheduled Jobs</Heading>
+            <Text className="mb-4">
+              Gadget.dev runs the following scheduled jobs:
+            </Text>
+            <ul className="list-disc pl-5 space-y-2">
+              <li className="text-gray-700">
+                <strong>Daily Data Sync:</strong> Syncs product and customer data from Shopify
+              </li>
+              <li className="text-gray-700">
+                <strong>Monthly Reminder Generation:</strong> Creates and schedules the monthly reminder emails
+              </li>
+              <li className="text-gray-700">
+                <strong>Depletion Prediction Update:</strong> Refines product depletion date estimates
+              </li>
+              <li className="text-gray-700">
+                <strong>Analytics Calculation:</strong> Processes reminder effectiveness metrics
+              </li>
+            </ul>
+            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+{`// Example Scheduled Job
+export const monthlyReminderJob = gadget.job({
+  schedule: "0 0 1 * *", // Run at midnight on the 1st of each month
+  action: async () => {
+    // Get all customers with products nearing depletion
+    const replenishmentRecords = await ReplenishmentRecord.findMany({
+      where: {
+        estimatedDepletionDate: {
+          gte: new Date(),
+          lte: addDays(new Date(), 30)
+        }
+      },
+      include: {
+        customer: true,
+        product: true
+      }
+    });
+
+    // Group by customer
+    const customerMap = new Map();
+    for (const record of replenishmentRecords) {
+      if (!customerMap.has(record.customer.id)) {
+        customerMap.set(record.customer.id, {
+          customer: record.customer,
+          products: []
+        });
+      }
+      
+      customerMap.get(record.customer.id).products.push({
+        product: record.product,
+        depletionDate: record.estimatedDepletionDate
+      });
+    }
+
+    // Send reminder emails
+    for (const { customer, products } of customerMap.values()) {
+      await sendReminderEmail(customer, products);
+      
+      // Update reminder sent count
+      for (const product of products) {
+        await ReplenishmentRecord.update({
+          where: {
+            customer: { id: customer.id },
+            product: { id: product.product.id }
+          },
+          data: {
+            remindersSent: { increment: 1 },
+            lastReminderDate: new Date()
+          }
+        });
+      }
+    }
+
+    return {
+      customersNotified: customerMap.size,
+      totalProductsIncluded: replenishmentRecords.length
+    };
+  }
+});`}
+            </Code>
+          </div>
+        </div>
+      </Card>
+
+      {/* Integration Architecture Diagram */}
+      <Card className="p-6">
+        <Heading className="text-2xl font-bold mb-4">Integration Architecture</Heading>
+        <div className="space-y-4">
+          <Text className="mb-2">
+            The overall integration architecture follows this data flow:
+          </Text>
+          <ol className="list-decimal pl-5 space-y-2">
+            <li className="text-gray-700">
+              <strong>Data Collection:</strong> Customer purchases and product data from Shopify
+            </li>
+            <li className="text-gray-700">
+              <strong>Data Processing:</strong> Product lifespan calculations and reminder scheduling in Gadget.dev
+            </li>
+            <li className="text-gray-700">
+              <strong>Customer Communication:</strong> Personalized reminder emails sent via Klaviyo
+            </li>
+            <li className="text-gray-700">
+              <strong>User Interaction:</strong> Customer views and manages replenishments in Shopify account or clicks through email
+            </li>
+            <li className="text-gray-700">
+              <strong>Conversion:</strong> Customer completes replenishment purchase in Shopify store
+            </li>
+            <li className="text-gray-700">
+              <strong>Analytics:</strong> Purchase and engagement data collected and analyzed
+            </li>
+          </ol>
           
-          <TabsContent value="gadget">
-            <div className="space-y-6">
-              <section>
-                <Heading className="text-xl font-semibold mb-4">Gadget.dev Integration</Heading>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <Text className="mb-4">
-                      Gadget.dev serves as the backend platform for the Replenish Reminder app, handling the core business logic,
-                      data processing, and integration between Shopify and Klaviyo.
-                    </Text>
-                    
-                    <Alert className="mb-4">
-                      <Server className="h-4 w-4" />
-                      <AlertTitle>Backend Platform</AlertTitle>
-                      <AlertDescription>
-                        Gadget.dev provides a serverless environment that simplifies backend development and offers
-                        scalable infrastructure for the app.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                  
-                  <Card className="p-4 bg-slate-50">
-                    <Heading className="text-lg font-medium mb-2">Key Integration Points</Heading>
-                    <ul className="list-disc pl-6 space-y-2">
-                      <li>Seamless Shopify API access with built-in authentication</li>
-                      <li>Direct Klaviyo API integration for sending emails</li>
-                      <li>Data models and storage for product lifespan data</li>
-                      <li>Scheduled jobs for reminder processing</li>
-                      <li>RESTful API endpoints for app frontend</li>
-                    </ul>
-                  </Card>
-                </div>
-              </section>
-              
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="setup">
-                  <AccordionTrigger>Gadget.dev Setup and Configuration</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        To set up the Gadget.dev backend for Replenish Reminder, follow these steps:
-                      </Text>
-                      
-                      <ol className="list-decimal pl-6 space-y-2">
-                        <li>Create a Gadget.dev account and create a new app</li>
-                        <li>Connect your Shopify store by installing the Shopify connection</li>
-                        <li>Add the Klaviyo connection by providing your Klaviyo API key</li>
-                        <li>Create the necessary data models (Products, Customers, Reminders)</li>
-                        <li>Set up scheduled jobs for reminder processing</li>
-                        <li>Deploy the backend</li>
-                      </ol>
-                      
-                      <Card className="p-4 bg-amber-50 border-amber-200">
-                        <div className="flex items-start gap-3">
-                          <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
-                          <div>
-                            <Heading className="text-md font-medium text-amber-800">Important Security Note</Heading>
-                            <Text className="text-sm text-amber-700 mt-1">
-                              Never expose your Gadget.dev API keys in frontend code. All API requests should be proxied
-                              through the Gadget.dev backend to maintain security.
-                            </Text>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="datamodels">
-                  <AccordionTrigger>Data Models and Schemas</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The following data models are used in the Gadget.dev backend:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Model</TableHead>
-                              <TableHead>Purpose</TableHead>
-                              <TableHead>Key Fields</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Product</TableCell>
-                              <TableCell>Store product lifespan data</TableCell>
-                              <TableCell>
-                                <code>id, title, estimatedLifespan, category, suggestedSubscription</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">CustomerProduct</TableCell>
-                              <TableCell>Track customer-specific product usage</TableCell>
-                              <TableCell>
-                                <code>customerId, productId, purchaseDate, estimatedDepletionDate</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">ReminderCampaign</TableCell>
-                              <TableCell>Track reminder email campaigns</TableCell>
-                              <TableCell>
-                                <code>templateId, productIds, status, scheduledDate, sentDate</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">ReminderStat</TableCell>
-                              <TableCell>Store reminder effectiveness metrics</TableCell>
-                              <TableCell>
-                                <code>campaignId, opens, clicks, conversions, revenue</code>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="apis">
-                  <AccordionTrigger>API Endpoints</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The Gadget.dev backend exposes the following API endpoints:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Endpoint</TableHead>
-                              <TableHead>Method</TableHead>
-                              <TableHead>Purpose</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">
-                                <code>/products</code>
-                              </TableCell>
-                              <TableCell>GET</TableCell>
-                              <TableCell>Get all products with lifespan data</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">
-                                <code>/products/:id</code>
-                              </TableCell>
-                              <TableCell>GET</TableCell>
-                              <TableCell>Get a specific product</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">
-                                <code>/products/:id</code>
-                              </TableCell>
-                              <TableCell>PUT</TableCell>
-                              <TableCell>Update product lifespan data</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">
-                                <code>/customers/:id/products</code>
-                              </TableCell>
-                              <TableCell>GET</TableCell>
-                              <TableCell>Get a customer's product purchase data</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">
-                                <code>/reminders/schedule</code>
-                              </TableCell>
-                              <TableCell>POST</TableCell>
-                              <TableCell>Schedule personalized reminders</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">
-                                <code>/analytics/reminders</code>
-                              </TableCell>
-                              <TableCell>GET</TableCell>
-                              <TableCell>Get reminder effectiveness metrics</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="jobs">
-                  <AccordionTrigger>Scheduled Jobs</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        Gadget.dev scheduled jobs are used for automated recurring tasks:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Job Name</TableHead>
-                              <TableHead>Schedule</TableHead>
-                              <TableHead>Purpose</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">syncShopifyProducts</TableCell>
-                              <TableCell>Daily at 1:00 AM</TableCell>
-                              <TableCell>Sync product data from Shopify</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">processReminderQueue</TableCell>
-                              <TableCell>Every 4 hours</TableCell>
-                              <TableCell>Process reminder queue and send due reminders</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">updateReminderStats</TableCell>
-                              <TableCell>Every 6 hours</TableCell>
-                              <TableCell>Update reminder effectiveness statistics</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">monthlyReplenishmentReport</TableCell>
-                              <TableCell>1st day of month at 6:00 AM</TableCell>
-                              <TableCell>Generate monthly replenishment reports</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          </TabsContent>
+          <div className="bg-gray-100 p-6 rounded-md mt-4 text-center">
+            [Integration Architecture Diagram - Visual representation of data flow between Shopify, Gadget.dev, and Klaviyo]
+          </div>
           
-          <TabsContent value="klaviyo">
-            <div className="space-y-6">
-              <section>
-                <Heading className="text-xl font-semibold mb-4">Klaviyo Integration</Heading>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <Text className="mb-4">
-                      Klaviyo serves as the email marketing and automation platform for the Replenish Reminder app,
-                      enabling personalized reminder emails and automated customer communication workflows.
-                    </Text>
-                    
-                    <Alert className="mb-4">
-                      <Mail className="h-4 w-4" />
-                      <AlertTitle>Email Marketing Platform</AlertTitle>
-                      <AlertDescription>
-                        Klaviyo provides robust email marketing capabilities with advanced segmentation,
-                        personalization, and analytics for tracking email performance.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                  
-                  <Card className="p-4 bg-slate-50">
-                    <Heading className="text-lg font-medium mb-2">Key Integration Points</Heading>
-                    <ul className="list-disc pl-6 space-y-2">
-                      <li>Sending personalized replenishment reminder emails</li>
-                      <li>Customer profile management in Klaviyo</li>
-                      <li>Tracking email opens, clicks, and conversions</li>
-                      <li>Event tracking for customer behavior analysis</li>
-                      <li>Automated flows for reminder sequences</li>
-                    </ul>
-                  </Card>
-                </div>
-              </section>
-              
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="setup">
-                  <AccordionTrigger>Klaviyo Setup and Configuration</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        To set up the Klaviyo integration for Replenish Reminder, follow these steps:
-                      </Text>
-                      
-                      <ol className="list-decimal pl-6 space-y-2">
-                        <li>Create a Klaviyo account if you don't have one</li>
-                        <li>Generate a Private API Key with appropriate permissions</li>
-                        <li>Set up the API key in your Gadget.dev backend</li>
-                        <li>Create lists for reminder recipients</li>
-                        <li>Set up email templates for different reminder types</li>
-                        <li>Configure tracking to properly attribute conversions</li>
-                      </ol>
-                      
-                      <Card className="p-4 bg-amber-50 border-amber-200">
-                        <div className="flex items-start gap-3">
-                          <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
-                          <div>
-                            <Heading className="text-md font-medium text-amber-800">Important Security Note</Heading>
-                            <Text className="text-sm text-amber-700 mt-1">
-                              Store your Klaviyo API key securely in Gadget.dev environment variables. Never include the API key
-                              in client-side code or public repositories.
-                            </Text>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="events">
-                  <AccordionTrigger>Event Tracking</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The following events are tracked in Klaviyo:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Event</TableHead>
-                              <TableHead>Purpose</TableHead>
-                              <TableHead>Properties</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Replenishment Reminder Sent</TableCell>
-                              <TableCell>Track when a reminder email is sent</TableCell>
-                              <TableCell>
-                                <code>productId, daysRemaining, reminderType</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Replenishment Reminder Opened</TableCell>
-                              <TableCell>Track when a reminder email is opened</TableCell>
-                              <TableCell>
-                                <code>productId, reminderType, campaignId</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Replenishment Reminder Clicked</TableCell>
-                              <TableCell>Track when a link in a reminder email is clicked</TableCell>
-                              <TableCell>
-                                <code>productId, reminderType, linkUrl, campaignId</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Replenishment Reminder Conversion</TableCell>
-                              <TableCell>Track when a purchase is made after a reminder</TableCell>
-                              <TableCell>
-                                <code>productId, orderId, orderValue, campaignId</code>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="templates">
-                  <AccordionTrigger>Email Templates</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The following email templates are used for different types of reminders:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Template</TableHead>
-                              <TableHead>Purpose</TableHead>
-                              <TableHead>Variables</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Early Reminder</TableCell>
-                              <TableCell>Sent 14 days before estimated depletion</TableCell>
-                              <TableCell>
-                                <code>{% raw %}{{first_name}}, {{product_name}}, {{days_remaining}}{% endraw %}</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Urgent Reminder</TableCell>
-                              <TableCell>Sent 3 days before estimated depletion</TableCell>
-                              <TableCell>
-                                <code>{% raw %}{{first_name}}, {{product_name}}, {{days_remaining}}{% endraw %}</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Subscription Recommendation</TableCell>
-                              <TableCell>Sent 7 days before estimated depletion</TableCell>
-                              <TableCell>
-                                <code>{% raw %}{{first_name}}, {{product_name}}, {{optimal_interval}}{% endraw %}</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Post-Depletion Reminder</TableCell>
-                              <TableCell>Sent after estimated depletion date</TableCell>
-                              <TableCell>
-                                <code>{% raw %}{{first_name}}, {{product_name}}, {{days_since_depletion}}{% endraw %}</code>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="flows">
-                  <AccordionTrigger>Klaviyo Flows</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The following Klaviyo flows are used for automated email sequences:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Flow</TableHead>
-                              <TableHead>Trigger</TableHead>
-                              <TableHead>Steps</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Replenishment Reminder</TableCell>
-                              <TableCell>API triggered when product is nearing depletion</TableCell>
-                              <TableCell>
-                                1. Initial reminder<br />
-                                2. Follow-up reminder (if no action taken)
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Subscription Offer</TableCell>
-                              <TableCell>After multiple replenishment purchases</TableCell>
-                              <TableCell>
-                                1. Subscription offer email<br />
-                                2. Benefits explanation<br />
-                                3. Final offer with incentive
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Post-Purchase Feedback</TableCell>
-                              <TableCell>30 days after purchase</TableCell>
-                              <TableCell>
-                                1. Feedback request<br />
-                                2. Lifespan confirmation
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="shopify">
-            <div className="space-y-6">
-              <section>
-                <Heading className="text-xl font-semibold mb-4">Shopify Integration</Heading>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <Text className="mb-4">
-                      Shopify is the core e-commerce platform that the Replenish Reminder app integrates with,
-                      providing access to product data, customer information, and order history.
-                    </Text>
-                    
-                    <Alert className="mb-4">
-                      <Database className="h-4 w-4" />
-                      <AlertTitle>E-commerce Platform</AlertTitle>
-                      <AlertDescription>
-                        Shopify serves as the foundation for the app, providing the essential data and
-                        commerce functionality needed for replenishment reminders and subscriptions.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                  
-                  <Card className="p-4 bg-slate-50">
-                    <Heading className="text-lg font-medium mb-2">Key Integration Points</Heading>
-                    <ul className="list-disc pl-6 space-y-2">
-                      <li>Embedded admin app built with Shopify Polaris</li>
-                      <li>Product data access via Admin API</li>
-                      <li>Customer data and order history access</li>
-                      <li>Product metafields for storing lifespan data</li>
-                      <li>Shopify Subscription API integration</li>
-                      <li>Customer account customization using Liquid</li>
-                    </ul>
-                  </Card>
-                </div>
-              </section>
-              
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="apis">
-                  <AccordionTrigger>Shopify APIs Used</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The app integrates with the following Shopify APIs:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>API</TableHead>
-                              <TableHead>Purpose</TableHead>
-                              <TableHead>Permissions Required</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Admin API (GraphQL)</TableCell>
-                              <TableCell>Access product, customer, and order data</TableCell>
-                              <TableCell>
-                                <code>read_products, read_customers, read_orders</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Admin API (REST)</TableCell>
-                              <TableCell>Metafield management for products</TableCell>
-                              <TableCell>
-                                <code>write_products</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Subscription API</TableCell>
-                              <TableCell>Manage subscription contracts</TableCell>
-                              <TableCell>
-                                <code>read_subscription_contracts, write_subscription_contracts</code>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Storefront API</TableCell>
-                              <TableCell>Customer-facing data access</TableCell>
-                              <TableCell>
-                                <code>unauthenticated_read_product_listings</code>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="metafields">
-                  <AccordionTrigger>Product Metafields</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The app uses the following metafields to store product lifespan and subscription data:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Metafield</TableHead>
-                              <TableHead>Namespace</TableHead>
-                              <TableHead>Description</TableHead>
-                              <TableHead>Type</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">estimatedLifespan</TableCell>
-                              <TableCell>replenish_reminder</TableCell>
-                              <TableCell>Estimated days until product depletion</TableCell>
-                              <TableCell><code>integer</code></TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">suggestedSubscription</TableCell>
-                              <TableCell>replenish_reminder</TableCell>
-                              <TableCell>Suggested subscription interval</TableCell>
-                              <TableCell><code>string</code></TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">valueScore</TableCell>
-                              <TableCell>replenish_reminder</TableCell>
-                              <TableCell>Product value score (0-100)</TableCell>
-                              <TableCell><code>integer</code></TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">repurchaseRate</TableCell>
-                              <TableCell>replenish_reminder</TableCell>
-                              <TableCell>Percentage of customers who repurchase</TableCell>
-                              <TableCell><code>decimal</code></TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">costPerDay</TableCell>
-                              <TableCell>replenish_reminder</TableCell>
-                              <TableCell>Calculated cost per day of usage</TableCell>
-                              <TableCell><code>decimal</code></TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="admin">
-                  <AccordionTrigger>Admin App Interface</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The Shopify Admin app interface provides merchants with the following functionality:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Section</TableHead>
-                              <TableHead>Purpose</TableHead>
-                              <TableHead>Features</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Dashboard</TableCell>
-                              <TableCell>Overview of app performance</TableCell>
-                              <TableCell>
-                                Key metrics, reminders sent, conversion rates, revenue generated
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Product Management</TableCell>
-                              <TableCell>Manage product lifespan data</TableCell>
-                              <TableCell>
-                                View, edit, and override product lifespan estimates
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Reminder Templates</TableCell>
-                              <TableCell>Manage email templates</TableCell>
-                              <TableCell>
-                                Create, edit, preview, and test email templates
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Analytics</TableCell>
-                              <TableCell>Track reminder effectiveness</TableCell>
-                              <TableCell>
-                                Open rates, click rates, conversion rates, revenue impact
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Settings</TableCell>
-                              <TableCell>Configure app settings</TableCell>
-                              <TableCell>
-                                Klaviyo integration, reminder timing, app behavior
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="customer">
-                  <AccordionTrigger>Customer Account Integration</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The "My Replenishments" section integrated into Shopify customer accounts provides the following features:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Feature</TableHead>
-                              <TableHead>Description</TableHead>
-                              <TableHead>Implementation Method</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Product Timeline</TableCell>
-                              <TableCell>Visual timeline of product depletion dates</TableCell>
-                              <TableCell>
-                                Liquid template with JavaScript for visualization
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Subscription Status</TableCell>
-                              <TableCell>View active subscriptions and details</TableCell>
-                              <TableCell>
-                                Integration with Shopify Subscription API
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">One-Click Reorder</TableCell>
-                              <TableCell>Quickly reorder depleting products</TableCell>
-                              <TableCell>
-                                AJAX cart API + instant checkout link
-                              </TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Reminder Preferences</TableCell>
-                              <TableCell>Control reminder frequency and channels</TableCell>
-                              <TableCell>
-                                Customer metafields + app preferences
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                      
-                      <Card className="p-4 bg-slate-50">
-                        <Heading className="text-lg font-medium mb-2">Liquid Theme Integration</Heading>
-                        <Text className="mb-4">
-                          The customer account section is implemented using Liquid templates that are injected into the
-                          customer account pages through Shopify's theme customization.
-                        </Text>
-                        <div className="bg-gray-800 text-gray-100 p-4 rounded overflow-x-auto">
-                          <pre className="text-sm"><code>{`<!-- Simplified implementation example -->
-{% if customer %}
-  {% section 'replenishment-reminders' %}
-{% endif %}`}</code></pre>
-                        </div>
-                      </Card>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="architecture">
-            <div className="space-y-6">
-              <section>
-                <Heading className="text-xl font-semibold mb-4">System Architecture</Heading>
-                <Text className="mb-6">
-                  The Replenish Reminder app uses a comprehensive system architecture that integrates
-                  Shopify, Gadget.dev, and Klaviyo to provide a seamless replenishment reminder experience.
-                </Text>
-                
-                <Card className="p-6 bg-slate-50">
-                  <Heading className="text-lg font-medium mb-4">Data Flow Diagram</Heading>
-                  <div className="p-4 border rounded bg-white">
-                    <pre className="text-sm overflow-x-auto">
-{`
-┌────────────────┐     ┌────────────────┐     ┌────────────────┐
-│                │     │                │     │                │
-│     Shopify    │◄────┤   Gadget.dev   │────►│     Klaviyo    │
-│                │     │                │     │                │
-└────────────────┘     └────────────────┘     └────────────────┘
-     │      ▲                │   ▲                 │    ▲
-     │      │                │   │                 │    │
-     ▼      │                ▼   │                 ▼    │
-┌────────────────┐     ┌────────────────┐     ┌────────────────┐
-│                │     │                │     │                │
-│ Product Data   │     │ Business Logic │     │ Email Delivery │
-│ Customer Data  │     │ Data Processing│     │ Event Tracking │
-│ Order History  │     │ API Endpoints  │     │                │
-│                │     │                │     │                │
-└────────────────┘     └────────────────┘     └────────────────┘
-                              │   ▲
-                              │   │
-                              ▼   │
-                        ┌────────────────┐
-                        │                │
-                        │  React/Polaris │
-                        │  Admin UI      │
-                        │                │
-                        └────────────────┘
-`}
-                    </pre>
-                  </div>
-                </Card>
-              </section>
-              
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="dataflow">
-                  <AccordionTrigger>Data Flow Process</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The following describes the key data flows in the Replenish Reminder app:
-                      </Text>
-                      
-                      <ol className="list-decimal pl-6 space-y-4">
-                        <li>
-                          <p className="font-medium">Product Data Synchronization</p>
-                          <p className="text-sm">
-                            Shopify product data is synchronized to Gadget.dev via scheduled jobs.
-                            This includes product details, variant information, and pricing.
-                            Gadget.dev enriches this data with lifespan estimations and stores it
-                            in its database.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Purchase Tracking</p>
-                          <p className="text-sm">
-                            When a customer makes a purchase in Shopify, the order data is sent to
-                            Gadget.dev, which records the purchase date, products purchased, and
-                            calculates estimated depletion dates based on product lifespan data.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Reminder Scheduling</p>
-                          <p className="text-sm">
-                            Gadget.dev continuously monitors customer purchase history and product
-                            lifespan data to determine when reminders should be sent. When a product
-                            is nearing its estimated depletion date, Gadget.dev triggers a reminder.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Email Delivery</p>
-                          <p className="text-sm">
-                            Gadget.dev uses the Klaviyo API to send personalized reminder emails to
-                            customers. The emails include product information, custom messaging, and
-                            direct reorder links.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Conversion Tracking</p>
-                          <p className="text-sm">
-                            When a customer makes a purchase after receiving a reminder, the conversion
-                            is tracked. Shopify records the order, Gadget.dev associates it with the
-                            reminder campaign, and Klaviyo updates the campaign performance metrics.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Analytics</p>
-                          <p className="text-sm">
-                            Gadget.dev aggregates data from Shopify orders and Klaviyo email performance
-                            to generate comprehensive analytics on reminder effectiveness, conversion rates,
-                            and revenue impact.
-                          </p>
-                        </li>
-                      </ol>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="key-components">
-                  <AccordionTrigger>Key System Components</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The Replenish Reminder system consists of the following key components:
-                      </Text>
-                      
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Component</TableHead>
-                              <TableHead>Responsibility</TableHead>
-                              <TableHead>Technologies</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Shopify Admin App</TableCell>
-                              <TableCell>Merchant interface for managing the app</TableCell>
-                              <TableCell>React, Polaris, GraphQL</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Customer Account Integration</TableCell>
-                              <TableCell>Customer-facing interface in Shopify store</TableCell>
-                              <TableCell>Liquid, JavaScript, AJAX</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Backend API</TableCell>
-                              <TableCell>Business logic and data processing</TableCell>
-                              <TableCell>Gadget.dev, Node.js, TypeScript</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Scheduled Jobs</TableCell>
-                              <TableCell>Automated tasks and data synchronization</TableCell>
-                              <TableCell>Gadget.dev Jobs, Cron</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Reminder Engine</TableCell>
-                              <TableCell>Determining when to send reminders</TableCell>
-                              <TableCell>AI algorithms, prediction models</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Email Delivery System</TableCell>
-                              <TableCell>Sending personalized reminder emails</TableCell>
-                              <TableCell>Klaviyo API, email templates</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Analytics Dashboard</TableCell>
-                              <TableCell>Tracking reminder effectiveness</TableCell>
-                              <TableCell>Recharts, data visualization</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="security">
-                  <AccordionTrigger>Security Considerations</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The following security measures are implemented in the app architecture:
-                      </Text>
-                      
-                      <ul className="list-disc pl-6 space-y-3">
-                        <li>
-                          <p className="font-medium">API Key Management</p>
-                          <p className="text-sm">
-                            All API keys are stored securely in Gadget.dev environment variables,
-                            never exposed in client-side code.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Authentication</p>
-                          <p className="text-sm">
-                            Shopify OAuth for merchant authentication, ensuring secure access to the admin app.
-                            Customer authentication is handled by Shopify's secure customer accounts system.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Data Encryption</p>
-                          <p className="text-sm">
-                            All data is transmitted over HTTPS, and sensitive data is encrypted at rest in Gadget.dev.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Permission Scopes</p>
-                          <p className="text-sm">
-                            Shopify API access is limited to the minimum required scopes needed for app functionality.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Rate Limiting</p>
-                          <p className="text-sm">
-                            API requests are rate limited to prevent abuse and ensure system stability.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Data Minimization</p>
-                          <p className="text-sm">
-                            Only essential customer data is collected and stored, following data minimization principles.
-                          </p>
-                        </li>
-                      </ul>
-                      
-                      <Card className="p-4 bg-amber-50 border-amber-200">
-                        <div className="flex items-start gap-3">
-                          <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
-                          <div>
-                            <Heading className="text-md font-medium text-amber-800">Security Best Practices</Heading>
-                            <Text className="text-sm text-amber-700 mt-1">
-                              Always conduct regular security audits and vulnerability assessments.
-                              Keep all libraries and dependencies up to date and monitor for security advisories.
-                            </Text>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="scalability">
-                  <AccordionTrigger>Scalability Considerations</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Text>
-                        The architecture is designed to scale with the following considerations:
-                      </Text>
-                      
-                      <ul className="list-disc pl-6 space-y-3">
-                        <li>
-                          <p className="font-medium">Serverless Architecture</p>
-                          <p className="text-sm">
-                            Gadget.dev provides a serverless environment that automatically scales
-                            based on load, without requiring manual infrastructure management.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Distributed Processing</p>
-                          <p className="text-sm">
-                            Reminder processing is distributed to handle large volumes of customers
-                            and products without performance degradation.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Efficient Data Storage</p>
-                          <p className="text-sm">
-                            Data is structured efficiently with proper indexing to ensure fast queries
-                            even as the database grows.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Caching Strategy</p>
-                          <p className="text-sm">
-                            Frequently accessed data is cached to reduce API calls and improve response times.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Batch Processing</p>
-                          <p className="text-sm">
-                            Reminder emails are processed in batches to optimize API usage and prevent rate limiting.
-                          </p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Klaviyo's Scalable Infrastructure</p>
-                          <p className="text-sm">
-                            Klaviyo's platform is designed to handle high email volumes and traffic spikes.
-                          </p>
-                        </li>
-                      </ul>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          </TabsContent>
-        </Tabs>
+          <Text className="text-sm text-gray-600 mt-4">
+            Note: The architecture is designed for scalability, with separate processing for data synchronization, 
+            reminder generation, and analytics to ensure optimal performance even with large customer bases.
+          </Text>
+        </div>
       </Card>
     </div>
   );

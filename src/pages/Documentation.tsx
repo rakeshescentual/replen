@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import AppNavigation from "@/components/AppNavigation";
 import { Card, Heading, Text } from "@/components/ui/shadcn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +8,7 @@ import IntegrationDocs from "@/components/docs/IntegrationDocs";
 import TechnicalSpecsDocs from "@/components/docs/TechnicalSpecsDocs";
 import FAQDocs from "@/components/docs/FAQDocs";
 import DeveloperDocs from "@/components/docs/DeveloperDocs";
+import IntegrationPointsDocs from "@/components/docs/IntegrationPointsDocs";
 
 const Documentation = () => {
   return (
@@ -26,6 +27,7 @@ const Documentation = () => {
             <TabsList className="mb-8 flex flex-wrap gap-2">
               <TabsTrigger value="product-guide">Product Guide</TabsTrigger>
               <TabsTrigger value="integrations">Integrations</TabsTrigger>
+              <TabsTrigger value="integration-points">Integration Points</TabsTrigger>
               <TabsTrigger value="technical">Technical Specs</TabsTrigger>
               <TabsTrigger value="developer">Developer Guide</TabsTrigger>
               <TabsTrigger value="faq">FAQ</TabsTrigger>
@@ -37,6 +39,10 @@ const Documentation = () => {
 
             <TabsContent value="integrations">
               <IntegrationDocs />
+            </TabsContent>
+
+            <TabsContent value="integration-points">
+              <IntegrationPointsDocs />
             </TabsContent>
 
             <TabsContent value="technical">
