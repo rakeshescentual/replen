@@ -11,7 +11,20 @@ import FAQDocs from "@/components/docs/FAQDocs";
 import DeveloperDocs from "@/components/docs/DeveloperDocs";
 import IntegrationPointsDocs from "@/components/docs/IntegrationPointsDocs";
 import GadgetDevDocs from "@/components/docs/GadgetDevDocs";
-import { CalendarClock, Sparkles, Zap, Server, ShoppingCart, MessageSquare, FileCode, Settings, Info, Layers } from "lucide-react";
+import { 
+  CalendarClock, 
+  Sparkles, 
+  Zap, 
+  Server, 
+  ShoppingCart, 
+  MessageSquare, 
+  FileCode, 
+  Settings, 
+  Info, 
+  Layers, 
+  Clock,
+  BarChart
+} from "lucide-react";
 
 const Documentation = () => {
   const location = useLocation();
@@ -47,26 +60,26 @@ const Documentation = () => {
             </Text>
           </div>
 
-          <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-lg border border-blue-100">
-            <Heading className="text-lg font-semibold mb-3 text-blue-800 flex items-center">
-              <Sparkles className="h-5 w-5 mr-2 text-blue-600" />
-              Core Application Purpose
+          <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 p-5 rounded-lg border border-purple-100">
+            <Heading className="text-lg font-semibold mb-3 text-purple-800 flex items-center">
+              <Sparkles className="h-5 w-5 mr-2 text-purple-600" />
+              AI-Powered Replenishment Predictions
             </Heading>
-            <Text className="text-blue-700 mb-4">
-              The Replenish Reminder app is designed to automate product replenishment for Escentual.com customers by:
+            <Text className="text-purple-700 mb-4">
+              Replenish Reminder automates product replenishment for Escentual.com customers through sophisticated AI analysis:
             </Text>
-            <ol className="list-decimal pl-6 space-y-2 text-blue-700">
+            <ol className="list-decimal pl-6 space-y-2 text-purple-700">
               <li>
-                <span className="font-medium">Predicting when customers will run out of products</span> based on purchase history, AI analysis, and internet data mining
+                <span className="font-medium">Advanced prediction engine</span> combines purchase history, product usage data, and internet data mining
               </li>
               <li>
-                <span className="font-medium">Sending monthly payday replenishment emails</span> with personalized product recommendations timed to arrive when customers have funds available
+                <span className="font-medium">Tailored to individual usage patterns</span> for highly accurate run-out date predictions
               </li>
               <li>
-                <span className="font-medium">Enabling one-click reordering</span> for a seamless replenishment experience
+                <span className="font-medium">Continuous improvement through machine learning</span> that adapts to customer feedback and behavior
               </li>
               <li>
-                <span className="font-medium">Learning from customer behavior</span> to continuously improve prediction accuracy
+                <span className="font-medium">Internet crawling for product reviews and usage information</span> to enhance prediction accuracy
               </li>
             </ol>
           </div>
@@ -79,16 +92,39 @@ const Documentation = () => {
               <div>
                 <Heading className="text-lg font-semibold text-green-800">Monthly Payday Reminders</Heading>
                 <Text className="text-green-700">
-                  Our unique approach sends replenishment emails timed with customer paydays for maximum convenience
+                  Our unique approach sends replenishment emails timed with customer paydays for maximum convenience and conversion
                 </Text>
               </div>
             </div>
             <div className="pl-0 md:pl-12">
               <ul className="list-disc pl-6 space-y-1 text-green-700">
-                <li>Reminders are strategically timed to arrive shortly after customers receive their monthly pay</li>
-                <li>Predictions ensure products won't run out before the next payday cycle</li>
+                <li>Reminders arrive shortly after customers receive their monthly pay when funds are available</li>
+                <li>AI prediction ensures products won't run out before the next payday cycle</li>
                 <li>Customers maintain their essential Escentual.com products without manual reordering</li>
+                <li>One-click reordering for seamless replenishment experience</li>
                 <li>Flexible scheduling adapts to each customer's specific payday schedule</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mb-8 bg-gradient-to-r from-amber-50 to-yellow-50 p-5 rounded-lg border border-amber-100">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="bg-amber-100 p-2 rounded-full">
+                <BarChart className="h-6 w-6 text-amber-600" />
+              </div>
+              <div>
+                <Heading className="text-lg font-semibold text-amber-800">Value Metrics</Heading>
+                <Text className="text-amber-700">
+                  Our system analyzes product value and cost efficiency for Escentual.com customers:
+                </Text>
+              </div>
+            </div>
+            <div className="pl-0 md:pl-12">
+              <ul className="list-disc pl-6 space-y-1 text-amber-700">
+                <li>Calculate cost-per-day metrics for all Escentual.com products</li>
+                <li>Compare value across similar products for intelligent recommendations</li>
+                <li>Identify highest-value items based on customer usage patterns</li>
+                <li>Suggest subscription options for frequently replenished products</li>
               </ul>
             </div>
           </div>
@@ -97,13 +133,16 @@ const Documentation = () => {
             <Heading className="text-lg font-semibold mb-2 text-blue-800">Latest Documentation Updates</Heading>
             <ul className="list-disc pl-6 space-y-1">
               <li className="text-sm text-blue-700">
-                <span className="font-medium">Gadget.dev Integration Guide:</span> New comprehensive documentation for backend integration with Escentual.com
+                <span className="font-medium">Enhanced AI Prediction Engine:</span> Improved documentation on internet data mining and machine learning algorithms
               </li>
               <li className="text-sm text-blue-700">
-                <span className="font-medium">Payday Reminder System:</span> Documentation on aligning replenishment with customer payday cycles
+                <span className="font-medium">Gadget.dev Integration Guide:</span> Updated comprehensive documentation for backend integration with Escentual.com
               </li>
               <li className="text-sm text-blue-700">
-                <span className="font-medium">Technical Specifications:</span> Expanded data models and API documentation for Escentual.com integration
+                <span className="font-medium">Payday Reminder System:</span> Expanded documentation on aligning replenishment with customer payday cycles
+              </li>
+              <li className="text-sm text-blue-700">
+                <span className="font-medium">Technical Specifications:</span> Refined data models and API documentation for Escentual.com integration
               </li>
               <li className="text-sm text-blue-700">
                 <span className="font-medium">Developer Guide:</span> New webhooks and integration points documentation for Escentual.com
