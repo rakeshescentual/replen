@@ -23,6 +23,21 @@ const Documentation = () => {
             </Text>
           </div>
 
+          <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
+            <Heading className="text-lg font-semibold mb-2 text-blue-800">Latest Documentation Updates</Heading>
+            <ul className="list-disc pl-6 space-y-1">
+              <li className="text-sm text-blue-700">
+                <span className="font-medium">Gadget.dev Integration Guide:</span> Updated with improved API examples and best practices
+              </li>
+              <li className="text-sm text-blue-700">
+                <span className="font-medium">Technical Specifications:</span> Expanded data models and API documentation
+              </li>
+              <li className="text-sm text-blue-700">
+                <span className="font-medium">Developer Guide:</span> New webhooks and integration points documentation
+              </li>
+            </ul>
+          </div>
+
           <Tabs defaultValue="product-guide" className="w-full">
             <TabsList className="mb-8 flex flex-wrap gap-2">
               <TabsTrigger value="product-guide">Product Guide</TabsTrigger>
