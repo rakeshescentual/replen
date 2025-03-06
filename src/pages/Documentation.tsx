@@ -23,8 +23,8 @@ const Documentation = () => {
   // If a tab is specified in URL params, use it as default tab
   useEffect(() => {
     if (tabParam && tabParam !== defaultTab) {
-      const tabTrigger = document.querySelector(`[data-state="inactive"][value="${tabParam}"]`);
-      if (tabTrigger) {
+      const tabTrigger = document.querySelector(`[data-state="inactive"][value="${tabParam}"]`) as HTMLElement | null;
+      if (tabTrigger && 'click' in tabTrigger) {
         tabTrigger.click();
       }
     }
