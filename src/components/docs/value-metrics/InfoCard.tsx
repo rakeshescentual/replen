@@ -16,6 +16,8 @@ interface InfoCardProps {
   compact?: boolean;
   bordered?: boolean;
   hoverable?: boolean;
+  animated?: boolean;
+  elevation?: "flat" | "low" | "medium" | "high";
 }
 
 const InfoCard = ({ 
@@ -31,6 +33,8 @@ const InfoCard = ({
   compact = false,
   bordered = true,
   hoverable = false,
+  animated = false,
+  elevation = "low",
 }: InfoCardProps) => {
   // Define color variants
   const colorVariants = {
@@ -78,15 +82,27 @@ const InfoCard = ({
     }
   };
 
+  // Define elevation classes
+  const elevationClasses = {
+    flat: "",
+    low: "shadow-sm",
+    medium: "shadow",
+    high: "shadow-md"
+  };
+
   const colors = colorVariants[variant];
   const paddingClass = compact ? "p-3" : "p-4";
   const borderClass = bordered ? `border ${colors.card}` : "border-0";
-  const hoverClass = hoverable ? "transition-all duration-200 hover:shadow-md hover:translate-y-[-2px]" : "";
+  const hoverClass = hoverable ? "transition-all duration-300 hover:shadow-md hover:translate-y-[-2px]" : "";
+  const animatedClass = animated ? "animate-fade-in" : "";
+  const shadowClass = elevationClasses[elevation];
 
   return (
-    <Card className={`bg-white/80 ${paddingClass} ${borderClass} ${hoverClass} ${className}`}>
+    <Card 
+      className={`bg-white/80 ${paddingClass} ${borderClass} ${hoverClass} ${animatedClass} ${shadowClass} ${className}`}
+    >
       <div className="flex items-start gap-3">
-        <div className={`${colors.iconBg} p-2 rounded-lg ${iconClassName}`}>
+        <div className={`${colors.iconBg} p-2 rounded-lg transition-all duration-200 ${hoverable ? "group-hover:scale-110" : ""} ${iconClassName}`}>
           <Icon className={`h-5 w-5 ${colors.icon}`} />
         </div>
         <div className="flex-1">
@@ -96,9 +112,12 @@ const InfoCard = ({
           {actionLink && actionText && (
             <a 
               href={actionLink} 
-              className={`mt-2 inline-block font-medium text-sm ${colors.icon} hover:underline`}
+              className={`mt-2 inline-flex items-center font-medium text-sm ${colors.icon} hover:underline transition-all duration-200`}
             >
-              {actionText}
+              <span>{actionText}</span>
+              <svg className="w-3 h-3 ml-1.5 transition-transform duration-200 ease-in-out transform group-hover:translate-x-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </a>
           )}
           
