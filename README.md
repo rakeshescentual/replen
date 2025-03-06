@@ -1,8 +1,20 @@
-# Welcome to your Lovable project
+
+# Replenish Reminder App
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/2fb3be3c-655e-4661-8af4-abb2564e0d00
+
+## Gadget.dev Integration
+
+This project is designed to work seamlessly with [Gadget.dev](https://gadget.dev) for its backend functionality. To set up the integration:
+
+1. Create a Gadget.dev account and project
+2. Set up the Shopify and Klaviyo connections in your Gadget project
+3. Create the necessary models for product lifespan tracking
+4. Configure your API Key in the application settings
+
+For detailed instructions on setting up the Gadget.dev backend, refer to the [Integration Documentation](https://lovable.dev/projects/2fb3be3c-655e-4661-8af4-abb2564e0d00/documentation) tab.
 
 ## How can I edit this code?
 
@@ -32,7 +44,10 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Set up your Gadget.dev API key as an environment variable
+# Create a .env file with GADGET_API_KEY=your_api_key_here
+
+# Step 5: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
@@ -52,13 +67,14 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with .
+This project is built with:
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- Gadget.dev for backend functionality
 
 ## How can I deploy this project?
 
