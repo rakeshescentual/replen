@@ -2,12 +2,14 @@
 import React from "react";
 import { Card, Heading, Text } from "@/components/ui/shadcn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calculator, LineChart, BarChart, DollarSign, Clock } from "lucide-react";
+import { Calculator, LineChart, BarChart, DollarSign, Clock, Sparkles } from "lucide-react";
 import ValueMetricsCrawlingInfo from "./value-metrics/ValueMetricsCrawlingInfo";
 import ValueMetricsOverview from "./value-metrics/ValueMetricsOverview";
 import CostPerUseMetrics from "./value-metrics/CostPerUseMetrics";
 import ProductLongevityMetrics from "./value-metrics/ProductLongevityMetrics";
 import ValueComparisonAnalysis from "./value-metrics/ValueComparisonAnalysis";
+import ValueMetricsBenefits from "./value-metrics/ValueMetricsBenefits";
+import ValueMetricsRealWorldExamples from "./value-metrics/ValueMetricsRealWorldExamples";
 
 const ValueMetricsDocs = () => {
   return (
@@ -18,6 +20,10 @@ const ValueMetricsDocs = () => {
           The Value Metrics System helps Escentual.com customers understand the true value of premium beauty products
           through sophisticated metrics that go beyond price tags.
         </Text>
+
+        <div className="mb-6">
+          <ValueMetricsBenefits />
+        </div>
 
         <ValueMetricsCrawlingInfo />
 
@@ -39,6 +45,10 @@ const ValueMetricsDocs = () => {
               <LineChart size={16} />
               <span>Value Comparison</span>
             </TabsTrigger>
+            <TabsTrigger value="examples" className="flex items-center gap-1.5">
+              <Sparkles size={16} />
+              <span>Real Examples</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -55,6 +65,10 @@ const ValueMetricsDocs = () => {
 
           <TabsContent value="comparison">
             <ValueComparisonAnalysis />
+          </TabsContent>
+          
+          <TabsContent value="examples">
+            <ValueMetricsRealWorldExamples />
           </TabsContent>
         </Tabs>
       </Card>
