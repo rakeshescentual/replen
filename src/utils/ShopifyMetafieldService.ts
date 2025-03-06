@@ -90,78 +90,86 @@ export class ShopifyMetafieldService {
       });
     }
   }
+  
+  /**
+   * Sync value metrics data to Shopify
+   */
+  public static async syncValueMetricsData(
+    productId: string,
+    valueScore: number,
+    costEfficiency: number,
+    internetDataScore?: number
+  ): Promise<void> {
+    try {
+      const metafields = {
+        value_score: valueScore,
+        cost_efficiency: costEfficiency,
+        internet_data_score: internetDataScore || 0,
+        last_updated: new Date().toISOString()
+      };
+
+      await this.syncProductMetafields({
+        productId,
+        namespace: 'value_metrics',
+        metafields
+      });
+
+      toast({
+        title: "Value Metrics Synced",
+        description: `Updated value metrics (score: ${valueScore}) for product ${productId}`,
+      });
+    } catch (error) {
+      console.error("Error syncing value metrics:", error);
+      toast({
+        title: "Value Metrics Sync Failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive"
+      });
+    }
+  }
+  
+  /**
+   * Sync usage data from internet sources to Shopify
+   */
+  public static async syncInternetDataInsights(
+    productId: string,
+    dataSource: string,
+    sentimentScore: number,
+    averageLifespan: number,
+    confidenceScore: number
+  ): Promise<void> {
+    try {
+      const metafields = {
+        data_source: dataSource,
+        sentiment_score: sentimentScore,
+        internet_predicted_lifespan: averageLifespan,
+        internet_data_confidence: confidenceScore,
+        crawl_date: new Date().toISOString()
+      };
+
+      await this.syncProductMetafields({
+        productId,
+        namespace: 'internet_data',
+        metafields
+      });
+
+      toast({
+        title: "Internet Data Synced",
+        description: `Updated internet data insights for product ${productId}`,
+      });
+    } catch (error) {
+      console.error("Error syncing internet data:", error);
+      toast({
+        title: "Internet Data Sync Failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive"
+      });
+    }
+  }
 }
 
-// Update the following function to handle value subscription data
-export const syncProductSubscriptionData = async (
-  productId: string, 
-  optimalInterval: number,
-  estimatedLifespan: number,
-  internetDataScore?: number
-): Promise<boolean> => {
-  try {
-    console.log(`Syncing product subscription data for product ${productId}`);
-    
-    // In a real implementation, this would call the Shopify Admin API
-    // to update the product's metafields with subscription data
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Prepare additional data if available
-    const additionalInfo = internetDataScore 
-      ? ` with internet data score: ${internetDataScore}` 
-      : '';
-    
-    // Simulate success response
-    toast({
-      title: "Subscription data updated",
-      description: `Updated optimal interval (${optimalInterval} days) and lifespan (${estimatedLifespan} days)${additionalInfo}`
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error syncing product subscription data:", error);
-    toast({
-      title: "Error",
-      description: error instanceof Error ? error.message : "Unknown error occurred",
-      variant: "destructive"
-    });
-    return false;
-  }
-};
+// Create specialized utility functions for different types of metafield sync operations
+import { ProductSubscriptionService } from "./ProductSubscriptionService";
+import { CustomerPaydayService } from "./CustomerPaydayService";
 
-/**
- * Synchronizes a customer's payday date with Shopify customer metafields
- */
-export const syncCustomerPaydayData = async (
-  customerId: string,
-  paydayDate: number, // Day of month (1-31)
-  paydayFrequency: 'monthly' | 'biweekly' | 'weekly' = 'monthly'
-): Promise<boolean> => {
-  try {
-    console.log(`Syncing customer payday data for customer ${customerId}`);
-    
-    // In a real implementation, this would call the Shopify Admin API
-    // to update the customer's metafields with payday information
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    // Simulate success response
-    toast({
-      title: "Payday data updated",
-      description: `Updated payday details (day: ${paydayDate}, frequency: ${paydayFrequency}) for customer`
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error syncing customer payday data:", error);
-    toast({
-      title: "Error",
-      description: error instanceof Error ? error.message : "Unknown error occurred",
-      variant: "destructive"
-    });
-    return false;
-  }
-};
+export { ProductSubscriptionService, CustomerPaydayService };

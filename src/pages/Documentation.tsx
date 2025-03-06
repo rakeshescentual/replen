@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppNavigation from "@/components/AppNavigation";
@@ -11,6 +10,7 @@ import FAQDocs from "@/components/docs/FAQDocs";
 import DeveloperDocs from "@/components/docs/DeveloperDocs";
 import IntegrationPointsDocs from "@/components/docs/IntegrationPointsDocs";
 import GadgetDevDocs from "@/components/docs/GadgetDevDocs";
+import ValueMetricsDocs from "@/components/docs/ValueMetricsDocs";
 import { 
   CalendarClock, 
   Sparkles, 
@@ -23,7 +23,8 @@ import {
   Info, 
   Layers, 
   Clock,
-  BarChart
+  BarChart,
+  Calculator
 } from "lucide-react";
 
 const Documentation = () => {
@@ -125,6 +126,7 @@ const Documentation = () => {
                 <li>Compare value across similar products for intelligent recommendations</li>
                 <li>Identify highest-value items based on customer usage patterns</li>
                 <li>Suggest subscription options for frequently replenished products</li>
+                <li>Internet data mining enhances value assessment accuracy</li>
               </ul>
             </div>
           </div>
@@ -168,6 +170,10 @@ const Documentation = () => {
                 <Server size={16} />
                 <span>Gadget.dev Guide</span>
               </TabsTrigger>
+              <TabsTrigger value="value-metrics" className="flex items-center gap-1.5">
+                <Calculator size={16} />
+                <span>Value Metrics</span>
+              </TabsTrigger>
               <TabsTrigger value="technical" className="flex items-center gap-1.5">
                 <Settings size={16} />
                 <span>Technical Specs</span>
@@ -196,6 +202,10 @@ const Documentation = () => {
             
             <TabsContent value="gadget-dev">
               <GadgetDevDocs />
+            </TabsContent>
+
+            <TabsContent value="value-metrics">
+              <ValueMetricsDocs />
             </TabsContent>
 
             <TabsContent value="technical">
