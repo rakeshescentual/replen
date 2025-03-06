@@ -1,7 +1,8 @@
 
 import React from "react";
-import { Card, Code, Heading, Text } from "@/components/ui/shadcn";
+import { Heading, Text } from "@/components/ui/shadcn";
 import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
 
 const IntegrationPointsDocs = () => {
   return (
@@ -59,7 +60,7 @@ const IntegrationPointsDocs = () => {
             <Text className="mb-4">
               Authentication is performed using OAuth 2.0 with the following scopes:
             </Text>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mb-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mb-4">
 {`// Required OAuth Scopes
 read_products, write_products
 read_customers, write_customers
@@ -68,7 +69,7 @@ read_content, write_content
 read_merchant_managed_fulfillment_orders
 read_shopify_payments_payouts
 read_shopify_payments_disputes`}
-            </Code>
+            </pre>
             <Text className="text-sm text-gray-600">
               The app uses a server-to-server access token for background operations and user-specific tokens for admin interface actions.
             </Text>
@@ -95,7 +96,7 @@ read_shopify_payments_disputes`}
                 Sync product data to Gadget.dev and Klaviyo
               </li>
             </ol>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
 {`// Example GraphQL Query for Products
 query {
   products(first: 50) {
@@ -130,7 +131,7 @@ query {
     }
   }
 }`}
-            </Code>
+            </pre>
           </div>
 
           <Separator />
@@ -140,7 +141,7 @@ query {
             <Text className="mb-4">
               The "My Replenishments" section is integrated into customer accounts using Liquid templates and JavaScript for dynamic content.
             </Text>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm">
 {`<!-- Example Liquid Template for My Replenishments -->
 <div id="my-replenishments">
   <h2>{{ 'customer.replenishments.title' | t }}</h2>
@@ -173,7 +174,7 @@ query {
       });
   });
 </script>`}
-            </Code>
+            </pre>
           </div>
         </div>
       </Card>
@@ -218,7 +219,7 @@ query {
                 Tracking engagement with reminder emails
               </li>
             </ol>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
 {`// Example Klaviyo Profile Update
 const updateKlaviyoProfile = async (customer, replenishmentData) => {
   const profileData = {
@@ -237,7 +238,7 @@ const updateKlaviyoProfile = async (customer, replenishmentData) => {
 
   return await klaviyoClient.profiles.createOrUpdate(profileData);
 };`}
-            </Code>
+            </pre>
           </div>
 
           <Separator />
@@ -261,7 +262,7 @@ const updateKlaviyoProfile = async (customer, replenishmentData) => {
             <Text className="mt-4 mb-2">
               Email campaigns are created using Klaviyo's API:
             </Text>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm">
 {`// Example Campaign Creation
 const createReminderCampaign = async (templateId, segmentId, sendDate) => {
   const campaignData = {
@@ -275,7 +276,7 @@ const createReminderCampaign = async (templateId, segmentId, sendDate) => {
 
   return await klaviyoClient.campaigns.create(campaignData);
 };`}
-            </Code>
+            </pre>
           </div>
 
           <Separator />
@@ -296,7 +297,7 @@ const createReminderCampaign = async (templateId, segmentId, sendDate) => {
                 <strong>Completed Replenishment Purchase:</strong> When a customer makes a purchase from a reminder
               </li>
             </ul>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
 {`// Example Event Tracking
 const trackReplenishmentPurchase = async (customer, orderData, source) => {
   const eventData = {
@@ -322,7 +323,7 @@ const trackReplenishmentPurchase = async (customer, orderData, source) => {
 
   return await klaviyoClient.events.track(eventData);
 };`}
-            </Code>
+            </pre>
           </div>
         </div>
       </Card>
@@ -373,7 +374,7 @@ const trackReplenishmentPurchase = async (customer, orderData, source) => {
                 <strong>ReminderEvent:</strong> Logs all reminder emails sent and customer interactions
               </li>
             </ul>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
 {`// Example Gadget.dev Data Model
 export const ReplenishmentRecord = gadget.recordType("ReplenishmentRecord", {
   fields: {
@@ -411,7 +412,7 @@ export const ReplenishmentRecord = gadget.recordType("ReplenishmentRecord", {
     }
   }
 });`}
-            </Code>
+            </pre>
           </div>
 
           <Separator />
@@ -435,7 +436,7 @@ export const ReplenishmentRecord = gadget.recordType("ReplenishmentRecord", {
                 <strong>/api/analytics:</strong> Get reminder performance metrics
               </li>
             </ul>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
 {`// Example API Endpoint in Gadget.dev
 export const getCustomerReplenishments = gadget.api.get(
   "/api/customer-replenishments",
@@ -487,7 +488,7 @@ export const getCustomerReplenishments = gadget.api.get(
     }));
   }
 );`}
-            </Code>
+            </pre>
           </div>
 
           <Separator />
@@ -511,7 +512,7 @@ export const getCustomerReplenishments = gadget.api.get(
                 <strong>Analytics Calculation:</strong> Processes reminder effectiveness metrics
               </li>
             </ul>
-            <Code className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
+            <pre className="bg-gray-100 p-4 rounded-md block whitespace-pre text-sm mt-4">
 {`// Example Scheduled Job
 export const monthlyReminderJob = gadget.job({
   schedule: "0 0 1 * *", // Run at midnight on the 1st of each month
@@ -571,7 +572,7 @@ export const monthlyReminderJob = gadget.job({
     };
   }
 });`}
-            </Code>
+            </pre>
           </div>
         </div>
       </Card>
