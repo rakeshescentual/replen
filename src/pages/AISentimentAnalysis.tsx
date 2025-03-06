@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, Heading, Text } from '@/components/ui/shadcn';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,7 @@ import {
 import { Loader2, TrendingUp, MessageSquare, Users, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useSentimentAnalysis, SentimentAnalysisResult, SentimentTrend } from '@/utils/AISentimentAnalysisService';
-import { AppNavigation } from '@/components/AppNavigation';
+import AppNavigation from '@/components/AppNavigation';
 
 // Mock product data
 const mockProducts = [
