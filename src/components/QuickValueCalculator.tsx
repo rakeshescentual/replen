@@ -27,7 +27,8 @@ const QuickValueCalculator = () => {
   }, [productPrice, usageFrequency]);
 
   const calculateValue = () => {
-    // Estimated uses based on product price (higher price often means more concentrated/effective products)
+    // Improved formula for better value representation
+    // Higher-priced products tend to be more concentrated
     const estimatedUses = 40 + (productPrice * 0.8);
     
     // Calculate days lasting based on frequency
@@ -36,7 +37,7 @@ const QuickValueCalculator = () => {
     // Calculate cost per day
     const costPerDay = productPrice / daysLasting;
     
-    // Value score calculation (higher is better)
+    // Enhanced value score calculation (higher is better)
     // Based on days lasting and cost efficiency
     const valueScore = Math.min(100, Math.max(0, 
       50 + (daysLasting / 2) - (costPerDay * 5)
