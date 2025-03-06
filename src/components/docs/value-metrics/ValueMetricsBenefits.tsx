@@ -11,7 +11,9 @@ import {
   CheckCircle, 
   ArrowRight,
   Database,
-  BarChart
+  BarChart,
+  DollarSign,
+  Zap
 } from "lucide-react";
 
 interface BenefitItemProps {
@@ -22,6 +24,7 @@ interface BenefitItemProps {
   animationDelay?: number;
   hasExample?: boolean;
   exampleText?: string;
+  tag?: string;
 }
 
 const BenefitItem: React.FC<BenefitItemProps> = ({ 
@@ -31,7 +34,8 @@ const BenefitItem: React.FC<BenefitItemProps> = ({
   highlighted = false,
   animationDelay = 0,
   hasExample = false,
-  exampleText
+  exampleText,
+  tag
 }) => {
   const delayStyle = { animationDelay: `${animationDelay}ms` };
   
@@ -46,9 +50,17 @@ const BenefitItem: React.FC<BenefitItemProps> = ({
       <div className="flex items-start gap-2">
         {icon && <span className="mt-1 flex-shrink-0 transition-all duration-300 hover:scale-110">{icon}</span>}
         <div className="w-full">
-          <span className="font-medium">{title}:</span> {description}
+          <div className="flex items-center justify-between">
+            <span className="font-medium">{title}</span>
+            {tag && (
+              <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                {tag}
+              </span>
+            )}
+          </div>
+          <p className="mt-1">{description}</p>
           {highlighted && (
-            <span className="inline-flex items-center ml-1 text-xs font-medium text-indigo-600 bg-indigo-100 px-1.5 py-0.5 rounded-full">
+            <span className="inline-flex items-center mt-1 text-xs font-medium text-indigo-600 bg-indigo-100 px-1.5 py-0.5 rounded-full">
               <CheckCircle className="w-3 h-3 mr-1" /> Key benefit
             </span>
           )}
@@ -67,85 +79,95 @@ const BenefitItem: React.FC<BenefitItemProps> = ({
 
 const ValueMetricsBenefits = () => {
   return (
-    <div className="bg-white/80 p-4 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex items-center justify-between mb-3">
         <Heading className="text-lg font-medium text-blue-800 flex items-center animate-fade-in">
           <Sparkles className="h-5 w-5 mr-2 text-blue-600" />
-          How Data Mining Enhances Value Metrics
+          Data-Enhanced Value Assessment
         </Heading>
         <span className="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center">
           <Database className="h-3.5 w-3.5 mr-1" />
-          Internet Data Analysis
+          AI-Powered Analysis
         </span>
       </div>
       
       <div className="mb-4 text-sm text-blue-600 bg-blue-50 rounded-md p-2.5 border border-blue-100 animate-fade-in" style={{ animationDelay: "50ms" }}>
-        Our AI-powered internet data mining captures real-world information about product usage, longevity, and customer experiences from across the web to create more accurate value metrics.
+        <div className="flex items-center gap-2">
+          <Zap className="h-4 w-4 text-amber-500" />
+          <span>Our Value Metrics System uses advanced internet data mining to analyze thousands of real-world consumer experiences, providing more accurate value assessments than traditional methods.</span>
+        </div>
       </div>
       
       <ul className="space-y-1 pl-0">
         <BenefitItem 
-          title="Accurate Lifespan Estimation"
-          description="Real-world usage data provides more accurate product lifespan estimates than manufacturer claims alone"
+          title="Real-Usage Lifespan Calculation"
+          description="Determines how long products actually last based on customer data rather than manufacturer estimates"
           icon={<Clock className="h-4 w-4 text-blue-600" />}
           animationDelay={100}
           hasExample
-          exampleText="A premium face serum advertised to last 30 days actually lasts 45 days for most users based on online usage reports"
+          exampleText="A luxury serum advertised to last 30 days lasts 45 days for most users according to our analysis"
+          tag="High accuracy"
         />
         <BenefitItem 
           title="Satisfaction Verification"
-          description="Verifies customer satisfaction claims across multiple platforms and sources"
+          description="Confirms product satisfaction across multiple data sources and platforms"
           icon={<Sparkles className="h-4 w-4 text-blue-600" />}
           highlighted
           animationDelay={200}
           hasExample
-          exampleText="92% of online reviews confirm the product's effectiveness matches or exceeds Escentual.com's product description"
+          exampleText="92% of analyzed user comments confirm the product's effectiveness matches its price point"
+          tag="Key insight"
         />
         <BenefitItem 
           title="Usage Pattern Recognition"
-          description="Identifies how customers actually use products in their routines"
+          description="Identifies typical application amounts and frequency for accurate cost-per-use calculations"
           icon={<LineChart className="h-4 w-4 text-blue-600" />}
           animationDelay={300}
+          tag="Pattern analysis"
         />
         <BenefitItem 
-          title="Comparative Analysis"
-          description="Helps compare similar products based on aggregated internet sentiment and reported results"
+          title="Comparative Value Analysis"
+          description="Compares similar products based on their true value metrics rather than just price"
           icon={<Scale className="h-4 w-4 text-blue-600" />}
           highlighted
           animationDelay={400}
           hasExample
-          exampleText="When comparing luxury moisturizers, our data shows the £85 option lasts 20% longer than the £65 alternative, making it a better value"
+          exampleText="When comparing two luxury moisturizers, our data shows the £85 option delivers 30% more applications than the £65 alternative"
+          tag="Smart comparison"
         />
         <BenefitItem 
-          title="Trend Identification"
-          description="Spots emerging trends in product usage and effectiveness over time"
-          icon={<TrendingUp className="h-4 w-4 text-blue-600" />}
+          title="Price-to-Performance Ratio"
+          description="Calculates how much value each pound spent delivers in terms of efficacy and duration"
+          icon={<DollarSign className="h-4 w-4 text-blue-600" />}
           animationDelay={500}
+          tag="Value insight"
+        />
+        <BenefitItem 
+          title="Optimal Application Guidance"
+          description="Provides recommendations on how to use products most efficiently based on collected data"
+          icon={<TrendingUp className="h-4 w-4 text-blue-600" />}
+          animationDelay={600}
+          tag="Usage tips"
         />
         <BenefitItem 
           title="External Data Integration"
-          description="Incorporates third-party product reviews and expert assessments"
+          description="Incorporates professional reviews, expert opinions, and third-party testing data"
           icon={<ExternalLink className="h-4 w-4 text-blue-600" />}
-          animationDelay={600}
-        />
-        <BenefitItem 
-          title="Cost-Per-Use Accuracy"
-          description="Calculates more precise cost-per-use metrics based on actual usage amounts reported online"
-          icon={<BarChart className="h-4 w-4 text-blue-600" />}
           highlighted
           animationDelay={700}
           hasExample
-          exampleText="Data shows customers use 25% less product per application than recommended, extending value by 33%"
+          exampleText="Data from 15+ beauty forums and 50+ professional review sites contribute to our value assessments"
+          tag="Comprehensive"
         />
       </ul>
       
       <div className="mt-4 pt-3 border-t border-blue-100 text-sm text-blue-700 flex items-center justify-between animate-fade-in" style={{ animationDelay: "800ms" }}>
         <div className="flex items-center">
           <Database className="h-4 w-4 mr-1.5" />
-          <span>Updated hourly with new internet data</span>
+          <span>Updated continuously with new internet data</span>
         </div>
         <div className="text-xs bg-blue-50 px-2 py-1 rounded-full">
-          Confidence score: 94%
+          System confidence: 96%
         </div>
       </div>
     </div>

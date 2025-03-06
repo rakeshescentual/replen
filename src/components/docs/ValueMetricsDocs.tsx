@@ -10,6 +10,7 @@ import ProductLongevityMetrics from "./value-metrics/ProductLongevityMetrics";
 import ValueComparisonAnalysis from "./value-metrics/ValueComparisonAnalysis";
 import ValueMetricsBenefits from "./value-metrics/ValueMetricsBenefits";
 import ValueMetricsRealWorldExamples from "./value-metrics/ValueMetricsRealWorldExamples";
+import InteractiveValueCalculator from "./value-metrics/InteractiveValueCalculator";
 
 const ValueMetricsDocs = () => {
   return (
@@ -23,6 +24,10 @@ const ValueMetricsDocs = () => {
 
         <div className="mb-6">
           <ValueMetricsBenefits />
+        </div>
+
+        <div className="mb-6">
+          <InteractiveValueCalculator />
         </div>
 
         <ValueMetricsCrawlingInfo />
