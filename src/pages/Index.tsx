@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import AppNavigation from '@/components/AppNavigation';
 import PersonalizedValueRecommendations from '@/components/PersonalizedValueRecommendations';
 import ValueBundleRecommendations from '@/components/ValueBundleRecommendations';

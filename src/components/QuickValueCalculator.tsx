@@ -65,7 +65,7 @@ const QuickValueCalculator = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-full mx-auto">
       <div>
         <div className="flex justify-between mb-2">
           <span className="text-sm font-medium text-gray-700">Product Price</span>
@@ -108,19 +108,19 @@ const QuickValueCalculator = () => {
 
       <div className="pt-2 border-t border-gray-100">
         <div className="grid grid-cols-3 gap-2">
-          <div className="bg-blue-50 p-3 rounded-lg text-center">
+          <div className="bg-blue-50 p-2 sm:p-3 rounded-lg text-center">
             <DollarSign className="h-4 w-4 mx-auto mb-1 text-blue-600" />
             <div className="text-xs text-blue-600 mb-1">Cost per Day</div>
             <div className="font-medium text-sm">£{result.costPerDay.toFixed(2)}</div>
           </div>
           
-          <div className="bg-blue-50 p-3 rounded-lg text-center">
+          <div className="bg-blue-50 p-2 sm:p-3 rounded-lg text-center">
             <Clock className="h-4 w-4 mx-auto mb-1 text-blue-600" />
             <div className="text-xs text-blue-600 mb-1">Days Lasting</div>
             <div className="font-medium text-sm">{result.daysLasting}</div>
           </div>
           
-          <div className="bg-blue-50 p-3 rounded-lg text-center">
+          <div className="bg-blue-50 p-2 sm:p-3 rounded-lg text-center">
             <TrendingUp className="h-4 w-4 mx-auto mb-1 text-blue-600" />
             <div className="text-xs text-blue-600 mb-1">Value Score</div>
             <div className="font-medium text-sm">
