@@ -1,6 +1,4 @@
 import React from "react";
-import { Card, Heading, Texttypescript
-import React from "react";
 import { Card, Heading, Text } from "@/components/ui/shadcn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calculator, LineChart, BarChart, DollarSign, Clock } from "lucide-react";
