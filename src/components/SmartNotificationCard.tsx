@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { AlertCircle, Bell, BellOff, CheckCircle, CircleAlert, RefreshCw, LineChart } from 'lucide-react';
@@ -9,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { useGadgetAPI } from '@/hooks/useGadgetAPI';
 import { useKlaviyoIntegration } from '@/utils/KlaviyoIntegrationService';
 import { useSentimentAnalysis } from '@/utils/AISentimentAnalysisService';
-import { syncProductSubscriptionData } from '@/utils/ShopifyMetafieldService';
+import { ProductSubscriptionService } from '@/utils/ProductSubscriptionService';
 
 interface Product {
   id: string;
@@ -37,9 +36,7 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
   const { analyzeProduct } = useSentimentAnalysis();
   
   useEffect(() => {
-    // This would load handled products from local storage or user preferences in a real app
     const loadHandledProducts = async () => {
-      // In a real implementation, this might load from a database via Gadget.dev
       console.log("Loading previously handled products...");
     };
     
@@ -54,8 +51,6 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
   
   const toggleNotifications = () => {
     setNotificationsEnabled(!notificationsEnabled);
-    
-    // In a real implementation, this would update user preferences in Gadget.dev
     
     toast({
       title: notificationsEnabled ? "Notifications disabled" : "Notifications enabled",
@@ -76,8 +71,6 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
   const markAsHandled = (productId: string) => {
     setHandledProducts(prev => [...prev, productId]);
     
-    // In a real implementation, this would update status in Gadget.dev
-    
     toast({
       title: "Product marked as handled",
       description: "This item will no longer appear in your notifications",
@@ -87,8 +80,6 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
   const resetHandledProducts = () => {
     setHandledProducts([]);
     
-    // In a real implementation, this would clear status in Gadget.dev
-    
     toast({
       title: "Notifications reset",
       description: "All products will now appear in your notifications",
@@ -96,14 +87,11 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
   };
   
   const handleReorder = async (productId: string) => {
-    // Call the parent's onReorder function
     onReorder(productId);
     
-    // In a real implementation, track this event in Klaviyo via Gadget.dev
     const product = products.find(p => p.id === productId);
     if (product) {
       try {
-        // This would be a real email in production
         await triggerReminder("customer@example.com", productId, product.daysRemaining);
         
         toast({
@@ -117,23 +105,19 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
   };
   
   const handleSubscribe = async (productId: string) => {
-    // Call the parent's onSubscribe function
     onSubscribe(productId);
     
     const product = products.find(p => p.id === productId);
     if (product) {
       try {
-        // Calculate optimal subscription interval based on product usage
         const optimalInterval = Math.max(25, product.daysRemaining - 5);
         
-        // Sync this data to Shopify metafields
-        await syncProductSubscriptionData(
+        await ProductSubscriptionService.syncProductSubscriptionData(
           productId,
           optimalInterval,
           product.daysRemaining
         );
         
-        // Update product in Gadget.dev
         await syncWithShopify();
         
         toast({
@@ -155,7 +139,6 @@ const SmartNotificationCard = ({ products, onReorder, onSubscribe }: SmartNotifi
     setIsAnalyzing(true);
     
     try {
-      // Analyze each product and store results
       const results: Record<string, number> = {};
       
       for (const product of displayProducts) {

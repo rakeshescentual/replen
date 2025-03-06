@@ -7,7 +7,7 @@ import AppNavigation from '@/components/AppNavigation';
 import PersonalizedValueRecommendations from '@/components/PersonalizedValueRecommendations';
 import ValueBundleRecommendations from '@/components/ValueBundleRecommendations';
 import SubscriptionValueCalculator from '@/components/SubscriptionValueCalculator';
-import { ArrowRight, LineChart, Layers, RefreshCw, PackageCheck, Home, Settings, BookOpen, User } from 'lucide-react';
+import { ArrowRight, LineChart, Layers, RefreshCw, PackageCheck, Home, Settings, BookOpen, User, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -31,6 +31,10 @@ const Index = () => {
           <Link to="/value-comparison" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">
             <Layers className="mr-3 h-5 w-5 text-gray-400" />
             Compare Products
+          </Link>
+          <Link to="/internet-data-analysis" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">
+            <Globe className="mr-3 h-5 w-5 text-gray-400" />
+            Internet Data Mining
           </Link>
           <Link to="/my-replenishments" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">
             <User className="mr-3 h-5 w-5 text-gray-400" />
@@ -216,11 +220,18 @@ const Index = () => {
               </Card>
             </div>
             
-            <div className="flex justify-center">
+            <div className="flex flex-wrap justify-center gap-4">
               <Button asChild variant="outline" className="hover:bg-gray-50">
                 <Link to="/documentation">
-                  View Implementation Documentation
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  View Documentation
+                  <BookOpen className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              
+              <Button asChild variant="default" className="bg-blue-600 hover:bg-blue-700">
+                <Link to="/internet-data-analysis">
+                  Try Internet Data Mining
+                  <Globe className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
