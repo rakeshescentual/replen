@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Info } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Loader2, Info, Globe, Database, ArrowRight, Wifi, LinkIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 // Form schema validation
 const formSchema = z.object({
@@ -188,7 +189,7 @@ export const WebCrawlerForm = ({ onCrawlComplete }: WebCrawlerFormProps) => {
   
   return (
     <div className="space-y-6">
-      <Alert className="bg-amber-50 border-amber-200">
+      <Alert className="bg-amber-50 border-amber-200 animate-fade-in">
         <Info className="h-4 w-4 text-amber-600" />
         <AlertTitle className="text-amber-800">Internet Data Mining</AlertTitle>
         <AlertDescription className="text-amber-700">
@@ -196,115 +197,182 @@ export const WebCrawlerForm = ({ onCrawlComplete }: WebCrawlerFormProps) => {
         </AlertDescription>
       </Alert>
       
-      <Card className="p-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <FormField
-              control={form.control}
-              name="url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Website URL</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="https://example.com" 
-                      {...field}
-                      className="focus:ring-2 focus:ring-offset-1 focus:ring-blue-400" 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card className="border-blue-100 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in" style={{ animationDelay: "100ms" }}>
+        <CardHeader className="pb-2 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-blue-700 flex items-center">
+                <Globe className="h-5 w-5 mr-2 text-blue-600" />
+                Web Crawler
+              </CardTitle>
+              <CardDescription>
+                Mine the internet for product value data
+              </CardDescription>
+            </div>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              <Database className="h-3 w-3 mr-1" />
+              <span>AI Analysis</span>
+            </Badge>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="pt-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
-                name="dataType"
+                name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Data Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-2 focus:ring-offset-1 focus:ring-blue-400">
-                          <SelectValue placeholder="Select data type to extract" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="reviews">Product Reviews</SelectItem>
-                        <SelectItem value="forum">Forum Discussions</SelectItem>
-                        <SelectItem value="blog">Blog Articles</SelectItem>
-                        <SelectItem value="product">Product Information</SelectItem>
-                        <SelectItem value="all">All Available Data</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel className="flex items-center">
+                      <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-blue-600" />
+                      Website URL
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input 
+                          placeholder="https://example.com" 
+                          {...field}
+                          className="focus:ring-2 focus:ring-offset-1 focus:ring-blue-400 pl-10" 
+                        />
+                        <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               
-              <FormField
-                control={form.control}
-                name="depth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Crawl Depth</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-2 focus:ring-offset-1 focus:ring-blue-400">
-                          <SelectValue placeholder="Select crawl depth" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="1">Shallow (Current Page Only)</SelectItem>
-                        <SelectItem value="2">Medium (Link Depth 2)</SelectItem>
-                        <SelectItem value="3">Deep (Link Depth 3)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            {isLoading && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-blue-700">
-                    {progress < 30 ? "Scanning website structure..." : 
-                     progress < 70 ? "Extracting product data..." : 
-                     progress < 95 ? "Analyzing value metrics..." : 
-                     "Finalizing results..."}
-                  </span>
-                  <span className="font-medium">{Math.round(progress)}%</span>
-                </div>
-                <Progress value={progress} className="h-2" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="dataType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        <Database className="h-3.5 w-3.5 mr-1.5 text-blue-600" />
+                        Data Type
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-2 focus:ring-offset-1 focus:ring-blue-400">
+                            <SelectValue placeholder="Select data type to extract" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="reviews">Product Reviews</SelectItem>
+                          <SelectItem value="forum">Forum Discussions</SelectItem>
+                          <SelectItem value="blog">Blog Articles</SelectItem>
+                          <SelectItem value="product">Product Information</SelectItem>
+                          <SelectItem value="all">All Available Data</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="depth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        <Wifi className="h-3.5 w-3.5 mr-1.5 text-blue-600" />
+                        Crawl Depth
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-2 focus:ring-offset-1 focus:ring-blue-400">
+                            <SelectValue placeholder="Select crawl depth" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1">Shallow (Current Page Only)</SelectItem>
+                          <SelectItem value="2">Medium (Link Depth 2)</SelectItem>
+                          <SelectItem value="3">Deep (Link Depth 3)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            )}
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Crawling Website...
-                </>
-              ) : (
-                "Start Data Mining"
+              
+              {isLoading && (
+                <div className="space-y-2 bg-blue-50 p-3 rounded-lg border border-blue-100 animate-fade-in">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-blue-700 font-medium flex items-center">
+                      {progress < 30 ? (
+                        <>
+                          <LinkIcon className="h-3.5 w-3.5 mr-1.5 animate-pulse" />
+                          Scanning website structure...
+                        </>
+                      ) : progress < 70 ? (
+                        <>
+                          <Database className="h-3.5 w-3.5 mr-1.5 animate-pulse" />
+                          Extracting product data...
+                        </>
+                      ) : progress < 95 ? (
+                        <>
+                          <ArrowRight className="h-3.5 w-3.5 mr-1.5 animate-pulse" />
+                          Analyzing value metrics...
+                        </>
+                      ) : (
+                        <>
+                          <Info className="h-3.5 w-3.5 mr-1.5 animate-pulse" />
+                          Finalizing results...
+                        </>
+                      )}
+                    </span>
+                    <span className="font-medium">{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="h-2" />
+                </div>
               )}
-            </Button>
-            
-            {!isLoading && (
-              <p className="text-xs text-gray-500 text-center">
-                Mining uses advanced algorithms to extract value metrics from product reviews and discussions.
-                Deeper crawls provide more data but take longer to complete.
-              </p>
-            )}
-          </form>
-        </Form>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Crawling Website...
+                  </>
+                ) : (
+                  <>
+                    <Globe className="mr-2 h-4 w-4" />
+                    Start Data Mining
+                  </>
+                )}
+              </Button>
+            </form>
+          </Form>
+          
+          {!isLoading && (
+            <div className="mt-5 bg-gray-50 p-3 rounded-lg border border-gray-100 text-xs text-gray-600 space-y-2 animate-fade-in" style={{ animationDelay: "200ms" }}>
+              <div className="font-medium text-gray-700 mb-1">How It Works:</div>
+              <div className="flex items-start space-x-2">
+                <span className="bg-blue-100 text-blue-700 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">1</span>
+                <p>Our AI crawler visits the specified website and analyzes the content</p>
+              </div>
+              <div className="flex items-start space-x-2">
+                <span className="bg-blue-100 text-blue-700 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">2</span>
+                <p>The system extracts product information, customer reviews, and usage patterns</p>
+              </div>
+              <div className="flex items-start space-x-2">
+                <span className="bg-blue-100 text-blue-700 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">3</span>
+                <p>AI algorithms calculate true value metrics based on this real-world data</p>
+              </div>
+              <div className="flex items-start space-x-2">
+                <span className="bg-blue-100 text-blue-700 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">4</span>
+                <p>Results are displayed and can be integrated into your product listings</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
       </Card>
     </div>
   );

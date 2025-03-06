@@ -7,7 +7,8 @@ import AppNavigation from '@/components/AppNavigation';
 import PersonalizedValueRecommendations from '@/components/PersonalizedValueRecommendations';
 import ValueBundleRecommendations from '@/components/ValueBundleRecommendations';
 import SubscriptionValueCalculator from '@/components/SubscriptionValueCalculator';
-import { ArrowRight, LineChart, Layers, RefreshCw, PackageCheck, Home, Settings, BookOpen, User, Globe } from 'lucide-react';
+import QuickValueCalculator from '@/components/QuickValueCalculator';
+import { ArrowRight, LineChart, Layers, RefreshCw, PackageCheck, Home, Settings, BookOpen, User, Globe, Calculator, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -67,8 +68,8 @@ const Index = () => {
             </p>
           </header>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="md:col-span-2 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-amber-50 to-amber-100">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <Card className="md:col-span-3 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-amber-50 to-amber-100">
               <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-amber-300 rounded-full opacity-10 -mt-16 -mr-16"></div>
               <CardHeader>
                 <CardTitle className="text-amber-800 text-xl md:text-2xl">Enhance Customer Value Perception</CardTitle>
@@ -123,6 +124,27 @@ const Index = () => {
                   </Button>
                 </div>
               </CardFooter>
+            </Card>
+            
+            <Card className="md:col-span-2 shadow-md border-blue-100 animate-fade-in" style={{ animationDelay: "100ms" }}>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg font-medium flex items-center">
+                    <Calculator className="h-5 w-5 text-blue-600 mr-2" />
+                    Quick Value Calculator
+                  </CardTitle>
+                  <Badge variant="outline" className="text-blue-600 bg-blue-50">
+                    <Sparkles className="h-3 w-3 mr-1" /> 
+                    New
+                  </Badge>
+                </div>
+                <CardDescription>
+                  Calculate the true value of your beauty products
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <QuickValueCalculator />
+              </CardContent>
             </Card>
           </div>
           
