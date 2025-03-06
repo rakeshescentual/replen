@@ -8,7 +8,7 @@ import {
   Heading, 
   Text 
 } from "@/components/ui/shadcn";
-import { Spider, Globe, Search, Database } from "lucide-react";
+import { Bug, Globe, Search, Database } from "lucide-react";
 
 interface CrawlData {
   url: string;
@@ -39,7 +39,7 @@ const InternetDataCrawling = () => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
             <div className="bg-purple-100 p-2 rounded-lg">
-              <Spider className="h-6 w-6 text-purple-700" />
+              <Bug className="h-6 w-6 text-purple-700" />
             </div>
             <div>
               <Heading className="text-3xl font-bold">Internet Data Crawling</Heading>
