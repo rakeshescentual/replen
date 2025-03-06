@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LineChart, RefreshCw, UserCheck, Brain, ArrowRightCircle, Server, Database } from 'lucide-react';
+import { LineChart, RefreshCw, UserCheck, Brain, ArrowRightCircle, Server, Database, CalendarClock } from 'lucide-react';
 
 const FeedbackInfoBox: React.FC = () => {
   return (
@@ -18,7 +18,7 @@ const FeedbackInfoBox: React.FC = () => {
           <div>
             <p className="text-sm font-medium text-blue-700 mb-0.5">Enhanced Data Model</p>
             <p className="text-xs text-blue-600">
-              Actual usage data is fed back into our machine learning model to improve accuracy
+              Actual usage data is fed back into our machine learning model to improve accuracy for Escentual.com products
             </p>
           </div>
         </div>
@@ -30,7 +30,19 @@ const FeedbackInfoBox: React.FC = () => {
           <div>
             <p className="text-sm font-medium text-blue-700 mb-0.5">Personalized Patterns</p>
             <p className="text-xs text-blue-600">
-              Customer-specific usage patterns are identified for tailored product recommendations
+              Customer-specific usage patterns are identified for tailored product recommendations from Escentual.com
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex items-start space-x-3">
+          <div className="p-1.5 mt-0.5 bg-blue-100 rounded-full">
+            <CalendarClock className="h-4 w-4 text-blue-700" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-blue-700 mb-0.5">Payday Optimized Reminders</p>
+            <p className="text-xs text-blue-600">
+              We time your replenishment emails to arrive just after your monthly payday for maximum convenience
             </p>
           </div>
         </div>
@@ -54,7 +66,7 @@ const FeedbackInfoBox: React.FC = () => {
           <div>
             <p className="text-sm font-medium text-blue-700 mb-0.5">Adaptive Timing</p>
             <p className="text-xs text-blue-600">
-              Reminder schedules adapt to match actual customer usage cycles and preferences
+              Reminder schedules adapt to match actual customer usage cycles and payday preferences
             </p>
           </div>
         </div>
@@ -67,7 +79,7 @@ const FeedbackInfoBox: React.FC = () => {
             <p className="text-xs font-medium text-blue-700">Gadget.dev Backend Processing</p>
             <p className="text-xs text-blue-500">
               Feedback data is processed in real-time using Gadget.dev's serverless functions, 
-              ensuring immediate updates to prediction models and customer profiles.
+              ensuring immediate updates to prediction models and customer profiles for Escentual.com shoppers.
             </p>
           </div>
         </div>

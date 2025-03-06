@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Info, Sparkles, TrendingUp, Settings, Server } from 'lucide-react';
+import { Info, Sparkles, TrendingUp, Settings, Server, CalendarClock, ShoppingCart } from 'lucide-react';
 
 const InfoSection: React.FC = () => {
   return (
@@ -13,8 +13,8 @@ const InfoSection: React.FC = () => {
       </div>
       
       <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-        Our AI analyzes multiple data points from your shopping behavior to provide the most 
-        relevant recommendations:
+        Our AI analyzes multiple data points from your Escentual.com shopping behavior to provide the most 
+        relevant recommendations, timed to arrive on your payday:
       </p>
       
       <div className="space-y-3 mb-4">
@@ -23,7 +23,7 @@ const InfoSection: React.FC = () => {
             <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
           </div>
           <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-700">Purchase History:</span> We analyze what you've bought and when
+            <span className="font-medium text-gray-700">Purchase History:</span> We analyze what you've bought from Escentual.com and when
           </p>
         </div>
         
@@ -32,7 +32,7 @@ const InfoSection: React.FC = () => {
             <TrendingUp className="h-3.5 w-3.5 text-indigo-600" />
           </div>
           <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-700">Usage Patterns:</span> We estimate when products will run out
+            <span className="font-medium text-gray-700">Usage Patterns:</span> We estimate when products will run out based on typical usage
           </p>
         </div>
         
@@ -41,7 +41,25 @@ const InfoSection: React.FC = () => {
             <Settings className="h-3.5 w-3.5 text-indigo-600" />
           </div>
           <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-700">Product Affinity:</span> We identify complementary items you might enjoy
+            <span className="font-medium text-gray-700">Product Affinity:</span> We identify complementary Escentual.com items you might enjoy
+          </p>
+        </div>
+        
+        <div className="flex items-start">
+          <div className="p-1.5 bg-indigo-50 rounded-full mr-3 mt-0.5">
+            <CalendarClock className="h-3.5 w-3.5 text-indigo-600" />
+          </div>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium text-gray-700">Payday Timing:</span> We align recommendations with your monthly payday
+          </p>
+        </div>
+        
+        <div className="flex items-start">
+          <div className="p-1.5 bg-indigo-50 rounded-full mr-3 mt-0.5">
+            <ShoppingCart className="h-3.5 w-3.5 text-indigo-600" />
+          </div>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium text-gray-700">One-Click Reordering:</span> Easily replenish items before they run out
           </p>
         </div>
       </div>
@@ -53,8 +71,8 @@ const InfoSection: React.FC = () => {
         </div>
         <p className="text-xs text-gray-600 pl-6 leading-relaxed">
           This recommendation engine leverages Gadget.dev's powerful backend services for real-time 
-          data processing and machine learning. The system seamlessly integrates with your store data, 
-          ensuring accurate product information and personalized recommendations.
+          data processing and machine learning. The system seamlessly integrates with your Escentual.com store data, 
+          ensuring accurate product information and personalized recommendations delivered on your monthly payday.
         </p>
         
         <div className="mt-3 pl-6">
