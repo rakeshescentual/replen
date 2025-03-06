@@ -7,11 +7,15 @@ interface InfoCardProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  variant?: "default" | "primary" | "success" | "warning" | "info";
+  variant?: "default" | "primary" | "success" | "warning" | "info" | "danger";
   actionLink?: string;
   actionText?: string;
   className?: string;
   iconClassName?: string;
+  children?: ReactNode;
+  compact?: boolean;
+  bordered?: boolean;
+  hoverable?: boolean;
 }
 
 const InfoCard = ({ 
@@ -23,6 +27,10 @@ const InfoCard = ({
   actionText,
   className = "",
   iconClassName = "",
+  children,
+  compact = false,
+  bordered = true,
+  hoverable = false,
 }: InfoCardProps) => {
   // Define color variants
   const colorVariants = {
@@ -60,18 +68,28 @@ const InfoCard = ({
       icon: "text-sky-600",
       title: "text-sky-800",
       text: "text-sky-700"
+    },
+    danger: {
+      card: "border-red-200",
+      iconBg: "bg-red-100",
+      icon: "text-red-600",
+      title: "text-red-800",
+      text: "text-red-700"
     }
   };
 
   const colors = colorVariants[variant];
+  const paddingClass = compact ? "p-3" : "p-4";
+  const borderClass = bordered ? `border ${colors.card}` : "border-0";
+  const hoverClass = hoverable ? "transition-all duration-200 hover:shadow-md hover:translate-y-[-2px]" : "";
 
   return (
-    <Card className={`p-4 bg-white/80 border ${colors.card} ${className}`}>
+    <Card className={`bg-white/80 ${paddingClass} ${borderClass} ${hoverClass} ${className}`}>
       <div className="flex items-start gap-3">
         <div className={`${colors.iconBg} p-2 rounded-lg ${iconClassName}`}>
           <Icon className={`h-5 w-5 ${colors.icon}`} />
         </div>
-        <div>
+        <div className="flex-1">
           <Heading className={`text-lg font-medium mb-1 ${colors.title}`}>{title}</Heading>
           <Text className={`text-sm ${colors.text}`}>{description}</Text>
           
@@ -83,6 +101,8 @@ const InfoCard = ({
               {actionText}
             </a>
           )}
+          
+          {children && <div className="mt-3">{children}</div>}
         </div>
       </div>
     </Card>
