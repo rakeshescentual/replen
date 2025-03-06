@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Info, Sparkles, TrendingUp, Settings } from 'lucide-react';
+import { Info, Sparkles, TrendingUp, Settings, Server } from 'lucide-react';
 
 const InfoSection: React.FC = () => {
   return (
@@ -48,15 +48,26 @@ const InfoSection: React.FC = () => {
       
       <div className="mt-4 pt-4 border-t border-gray-100">
         <div className="flex items-center mb-2">
-          <svg className="h-4 w-4 text-indigo-600 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 7L12 15L4 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <Server className="h-4 w-4 text-indigo-600 mr-2" />
           <h4 className="font-medium text-xs text-indigo-700">Powered by Gadget.dev</h4>
         </div>
         <p className="text-xs text-gray-600 pl-6 leading-relaxed">
-          This recommendation engine seamlessly integrates with your store data through Gadget.dev's 
-          API, ensuring real-time updates and synchronized product information across platforms.
+          This recommendation engine leverages Gadget.dev's powerful backend services for real-time 
+          data processing and machine learning. The system seamlessly integrates with your store data, 
+          ensuring accurate product information and personalized recommendations.
         </p>
+        
+        <div className="mt-3 pl-6">
+          <a 
+            href="/documentation?tab=gadget-dev" 
+            className="inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
+          >
+            Learn more about our Gadget.dev integration
+            <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -2,13 +2,18 @@
 import { useState, useCallback } from 'react';
 import { toast } from "@/hooks/use-toast";
 
-// Define types for Gadget.dev API responses
+/**
+ * Type definitions for Gadget.dev API responses and data models
+ */
 interface GadgetResponse<T> {
   data: T;
   success: boolean;
   errors?: string[];
 }
 
+/**
+ * Product data structure from Gadget.dev
+ */
 interface ProductLifespanData {
   id: string;
   title: string;
@@ -20,6 +25,9 @@ interface ProductLifespanData {
   repurchaseRate?: number;
 }
 
+/**
+ * Klaviyo template data structure from Gadget.dev
+ */
 interface KlaviyoTemplateData {
   id: string;
   name: string;
@@ -27,17 +35,59 @@ interface KlaviyoTemplateData {
   status: 'active' | 'draft';
 }
 
-// In a real implementation, this would be the actual Gadget client
-// import { GadgetConnection } from '@gadget-client/replenish-reminder';
-// const gadgetClient = new GadgetConnection({
-//   apiKey: process.env.GADGET_API_KEY
-// });
+/**
+ * Sentiment analysis result from Gadget.dev AI processing
+ */
+interface SentimentAnalysisResult {
+  score: number;
+  confidence: number;
+}
 
+/**
+ * Custom hook for interacting with the Gadget.dev API
+ * 
+ * In a production environment, this would utilize the Gadget.dev client SDK:
+ * import { GadgetConnection } from '@gadget-client/replenish-reminder';
+ * 
+ * @returns Object containing API methods and state
+ */
 export function useGadgetAPI() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Fetch products with lifespan data from Gadget.dev
+  /**
+   * Base function to make authenticated requests to Gadget.dev
+   * 
+   * @param endpoint API endpoint path
+   * @param method HTTP method
+   * @param data Optional request body data
+   * @returns Promise with the API response
+   */
+  const makeRequest = useCallback(async <T>(
+    endpoint: string, 
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+    data?: any
+  ): Promise<T> => {
+    // In a real implementation, this would use the Gadget.dev client
+    // For demonstration purposes, we'll simulate API calls with mock data
+    
+    console.log(`Making ${method} request to Gadget.dev endpoint: ${endpoint}`);
+    if (data) {
+      console.log('Request data:', data);
+    }
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+    
+    // This would be replaced with actual API calls in production
+    return {} as T;
+  }, []);
+  
+  /**
+   * Fetch products with lifespan data from Gadget.dev
+   * 
+   * @returns Promise containing an array of products with lifespan data
+   */
   const fetchProducts = useCallback(async (): Promise<ProductLifespanData[]> => {
     setIsLoading(true);
     setError(null);
@@ -117,7 +167,12 @@ export function useGadgetAPI() {
     }
   }, []);
 
-  // Send a test email via Klaviyo integration on Gadget.dev
+  /**
+   * Send a test email via Klaviyo integration on Gadget.dev
+   * 
+   * @param email Recipient email address
+   * @returns Promise resolving to a boolean indicating success
+   */
   const sendTestEmail = useCallback(async (email: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
@@ -161,7 +216,11 @@ export function useGadgetAPI() {
     }
   }, []);
 
-  // Fetch Klaviyo templates configured in Gadget.dev
+  /**
+   * Fetch Klaviyo templates configured in Gadget.dev
+   * 
+   * @returns Promise containing an array of Klaviyo templates
+   */
   const fetchKlaviyoTemplates = useCallback(async (): Promise<KlaviyoTemplateData[]> => {
     setIsLoading(true);
     setError(null);
@@ -223,7 +282,13 @@ export function useGadgetAPI() {
     }
   }, []);
 
-  // Update product lifespan in Gadget.dev
+  /**
+   * Update product lifespan in Gadget.dev
+   * 
+   * @param productId Product ID to update
+   * @param lifespanDays New lifespan value in days
+   * @returns Promise resolving to a boolean indicating success
+   */
   const updateProductLifespan = useCallback(async (productId: string, lifespanDays: number): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
@@ -266,8 +331,13 @@ export function useGadgetAPI() {
     }
   }, []);
 
-  // Run AI sentiment analysis on product reviews
-  const analyzeSentiment = useCallback(async (productId: string): Promise<{score: number, confidence: number}> => {
+  /**
+   * Run AI sentiment analysis on product reviews
+   * 
+   * @param productId Product ID to analyze reviews for
+   * @returns Promise containing sentiment analysis results
+   */
+  const analyzeSentiment = useCallback(async (productId: string): Promise<SentimentAnalysisResult> => {
     setIsLoading(true);
     setError(null);
     
@@ -316,7 +386,11 @@ export function useGadgetAPI() {
     }
   }, []);
 
-  // Sync product data with Shopify
+  /**
+   * Sync product data with Shopify
+   * 
+   * @returns Promise resolving to a boolean indicating success
+   */
   const syncWithShopify = useCallback(async (): Promise<boolean> => {
     setIsLoading(true);
     setError(null);

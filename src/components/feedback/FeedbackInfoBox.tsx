@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LineChart, RefreshCw, UserCheck, Brain, ArrowRightCircle } from 'lucide-react';
+import { LineChart, RefreshCw, UserCheck, Brain, ArrowRightCircle, Server, Database } from 'lucide-react';
 
 const FeedbackInfoBox: React.FC = () => {
   return (
@@ -61,10 +61,39 @@ const FeedbackInfoBox: React.FC = () => {
       </div>
       
       <div className="mt-4 pt-3 border-t border-blue-100">
-        <p className="text-xs text-blue-500 italic">
-          The feedback loop created between customers and our AI system ensures that replenishment 
-          recommendations become increasingly relevant over time.
-        </p>
+        <div className="flex items-start space-x-2 mb-2">
+          <Server className="h-4 w-4 text-blue-600 mt-0.5" />
+          <div>
+            <p className="text-xs font-medium text-blue-700">Gadget.dev Backend Processing</p>
+            <p className="text-xs text-blue-500">
+              Feedback data is processed in real-time using Gadget.dev's serverless functions, 
+              ensuring immediate updates to prediction models and customer profiles.
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex items-start space-x-2">
+          <Database className="h-4 w-4 text-blue-600 mt-0.5" />
+          <div>
+            <p className="text-xs font-medium text-blue-700">Secure Data Storage</p>
+            <p className="text-xs text-blue-500">
+              All customer feedback and usage data is securely stored in Gadget.dev's database, 
+              ensuring data integrity and compliance with privacy regulations.
+            </p>
+          </div>
+        </div>
+        
+        <div className="mt-2 text-right">
+          <a 
+            href="/documentation?tab=gadget-dev" 
+            className="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800"
+          >
+            Learn more about our technical infrastructure
+            <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   );

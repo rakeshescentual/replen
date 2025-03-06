@@ -9,6 +9,7 @@ import TechnicalSpecsDocs from "@/components/docs/TechnicalSpecsDocs";
 import FAQDocs from "@/components/docs/FAQDocs";
 import DeveloperDocs from "@/components/docs/DeveloperDocs";
 import IntegrationPointsDocs from "@/components/docs/IntegrationPointsDocs";
+import GadgetDevDocs from "@/components/docs/GadgetDevDocs";
 
 const Documentation = () => {
   return (
@@ -27,7 +28,7 @@ const Documentation = () => {
             <Heading className="text-lg font-semibold mb-2 text-blue-800">Latest Documentation Updates</Heading>
             <ul className="list-disc pl-6 space-y-1">
               <li className="text-sm text-blue-700">
-                <span className="font-medium">Gadget.dev Integration Guide:</span> Updated with improved API examples and best practices
+                <span className="font-medium">Gadget.dev Integration Guide:</span> New comprehensive documentation for backend integration
               </li>
               <li className="text-sm text-blue-700">
                 <span className="font-medium">Technical Specifications:</span> Expanded data models and API documentation
@@ -43,6 +44,7 @@ const Documentation = () => {
               <TabsTrigger value="product-guide">Product Guide</TabsTrigger>
               <TabsTrigger value="integrations">Integrations</TabsTrigger>
               <TabsTrigger value="integration-points">Integration Points</TabsTrigger>
+              <TabsTrigger value="gadget-dev">Gadget.dev Guide</TabsTrigger>
               <TabsTrigger value="technical">Technical Specs</TabsTrigger>
               <TabsTrigger value="developer">Developer Guide</TabsTrigger>
               <TabsTrigger value="faq">FAQ</TabsTrigger>
@@ -58,6 +60,10 @@ const Documentation = () => {
 
             <TabsContent value="integration-points">
               <IntegrationPointsDocs />
+            </TabsContent>
+            
+            <TabsContent value="gadget-dev">
+              <GadgetDevDocs />
             </TabsContent>
 
             <TabsContent value="technical">
