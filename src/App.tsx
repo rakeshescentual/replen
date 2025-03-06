@@ -9,6 +9,7 @@ import CustomerMyReplenishments from '@/pages/CustomerMyReplenishments'
 import AISentimentAnalysis from '@/pages/AISentimentAnalysis'
 import NotFound from '@/pages/NotFound'
 import InternetDataAnalysis from '@/pages/InternetDataAnalysis'
+import InternetDataCrawling from '@/pages/InternetDataCrawling'
 import './App.css'
 
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
   {
     path: '/internet-data-analysis',
     element: <InternetDataAnalysis />,
+  },
+  {
+    path: '/internet-data-crawling',
+    element: <InternetDataCrawling />,
   },
   {
     path: '*',
