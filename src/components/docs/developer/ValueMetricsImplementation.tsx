@@ -115,7 +115,7 @@ const ValueMetricsImplementation = () => {
                     <p className="text-blue-700 pl-8">method: 'POST',</p>
                     <p className="text-blue-700 pl-8">headers: {'{'}</p>
                     <p className="text-blue-700 pl-12">'Content-Type': 'application/json',</p>
-                    <p className="text-blue-700 pl-12">'Authorization': `Bearer ${apiKey}`</p>
+                    <p className="text-blue-700 pl-12">'Authorization': `Bearer ${process.env.GADGET_API_KEY || 'YOUR_API_KEY'}`</p>
                     <p className="text-blue-700 pl-8">{'}'},</p>
                     <p className="text-blue-700 pl-8">body: JSON.stringify({'{'}</p>
                     <p className="text-blue-700 pl-12">product_id: productId,</p>
