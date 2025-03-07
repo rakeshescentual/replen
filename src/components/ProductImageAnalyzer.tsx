@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,14 +28,12 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  // Open file picker
   const handleUploadClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
   
-  // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -52,7 +49,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
     }
   };
   
-  // Toggle camera on/off
   const toggleCamera = async () => {
     setShowCamera(!showCamera);
     
@@ -70,13 +66,11 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
         setShowCamera(false);
       }
     } else if (showCamera && videoRef.current && videoRef.current.srcObject) {
-      // Stop camera stream
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
     }
   };
   
-  // Take photo from camera
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
@@ -84,43 +78,42 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
       const context = canvas.getContext('2d');
       
       if (context) {
-        // Set canvas dimensions to match video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        
-        // Draw video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Convert canvas to data URL
         const photoDataUrl = canvas.toDataURL('image/jpeg');
         setImage(photoDataUrl);
-        
-        // Turn off camera after taking photo
         toggleCamera();
-        
         setAnalysisResult(null);
         setDeliveryEstimate(null);
       }
     }
   };
   
-  // Analyze the product image
   const analyzeImage = async () => {
     if (!image) return;
     
     setIsAnalyzing(true);
     
     try {
-      // Call the predictive analysis service to process the image
+      toast({
+        title: "Analyzing Product",
+        description: "Our AI is identifying your product and analyzing usage...",
+      });
+      
       const result = await PredictiveAnalysisService.processProductImage(image, customerId);
       setAnalysisResult(result);
       
-      // Get delivery estimate if product was identified
       if (result.productId) {
         const estimate = await PredictiveAnalysisService.getReorderDeliveryEstimate(result.productId);
         if (estimate.inStock) {
           setDeliveryEstimate({ minDays: estimate.minDays, maxDays: estimate.maxDays });
         }
+        
+        toast({
+          title: "Product Identified",
+          description: `We've identified ${result.productName} with ${result.estimatedRemainingPercentage}% remaining.`,
+        });
       }
       
       if (result.confidenceScore < 0.6) {
@@ -142,7 +135,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
     }
   };
   
-  // Place an order for the recognized product
   const handleReorder = () => {
     if (!analysisResult) return;
     
@@ -156,14 +148,12 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
     }
   };
   
-  // Subscribe to the recognized product
   const handleSubscribe = () => {
     if (!analysisResult) return;
     
-    // Calculate optimal interval based on usage patterns
     const optimalInterval = analysisResult.estimatedDaysRemaining > 0 
       ? ProductSubscriptionService.calculateOptimalInterval(analysisResult.estimatedDaysRemaining)
-      : 30; // Default to 30 days if we can't estimate
+      : 30;
     
     if (onSubscribe) {
       onSubscribe(analysisResult.productId, optimalInterval);
@@ -175,7 +165,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
     }
   };
   
-  // Reset the component
   const handleReset = () => {
     setImage(null);
     setAnalysisResult(null);
@@ -185,7 +174,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
     }
   };
   
-  // Format a date to a readable string
   const formatDate = (date: Date): string => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
@@ -198,7 +186,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
         Take a photo of your nearly empty product, and we'll tell you when it will run out and offer a convenient reorder.
       </Text>
       
-      {/* Photo upload/capture area */}
       {!image && !showCamera && (
         <div className="mb-6 flex flex-col items-center">
           <div className="flex gap-3 mb-4">
@@ -225,16 +212,18 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
               className="hidden" 
             />
           </div>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center w-full max-w-md">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center w-full max-w-md hover:bg-gray-50 transition-colors">
             <div className="flex justify-center mb-4">
               <Camera size={48} className="text-gray-400" />
             </div>
-            <Text className="text-gray-500">Upload or take a photo of your product</Text>
+            <Text className="text-gray-500 mb-2">Upload or take a photo of your product</Text>
+            <Text className="text-gray-400 text-sm">
+              For best results, ensure good lighting and that the product label is visible
+            </Text>
           </div>
         </div>
       )}
       
-      {/* Camera view */}
       {showCamera && (
         <div className="mb-6 flex flex-col items-center">
           <div className="relative w-full max-w-md overflow-hidden rounded-lg border">
@@ -263,7 +252,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
         </div>
       )}
       
-      {/* Image preview */}
       {image && !isAnalyzing && !analysisResult && (
         <div className="mb-6 flex flex-col items-center">
           <div className="relative w-full max-w-md overflow-hidden rounded-lg border mb-3">
@@ -281,24 +269,37 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
         </div>
       )}
       
-      {/* Loading state */}
       {isAnalyzing && (
         <div className="mb-6 flex flex-col items-center text-center">
-          <div className="relative w-full max-w-md overflow-hidden rounded-lg border mb-4 opacity-50">
+          <div className="relative w-full max-w-md overflow-hidden rounded-lg border mb-4 opacity-60">
             <img src={image!} alt="Product being analyzed" className="w-full h-auto" />
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
           </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 mb-3"></div>
-          <Text className="text-gray-600 mb-1">Analyzing your product...</Text>
-          <Text className="text-gray-500 text-sm">Using AI to identify the product and estimate remaining amount</Text>
+          
+          <div className="flex flex-col items-center mb-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700 mb-4"></div>
+            <div className="space-y-1">
+              <Text className="text-blue-800 font-medium">Analyzing your product...</Text>
+              <div className="flex flex-col items-center space-y-1 text-sm text-gray-500">
+                <p>Identifying product type</p>
+                <p>Estimating remaining amount</p>
+                <p>Analyzing usage patterns</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="max-w-md bg-blue-50 p-3 rounded-md text-blue-700 text-sm">
+            This typically takes 2-3 seconds. Our AI is examining the image to identify your product
+            and estimate how much is left.
+          </div>
         </div>
       )}
       
-      {/* Analysis result */}
       {analysisResult && (
         <div className="mb-6">
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <div className="w-full md:w-1/3">
-              <div className="rounded-lg border overflow-hidden mb-3">
+              <div className="rounded-lg border overflow-hidden mb-3 shadow-sm hover:shadow-md transition-shadow">
                 <img src={image!} alt={analysisResult.productName} className="w-full h-auto" />
               </div>
               <Button 
@@ -311,30 +312,37 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
             </div>
             
             <div className="w-full md:w-2/3 space-y-4">
-              <div className="border rounded-lg p-4">
+              <div className="border rounded-lg p-4 shadow-sm">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <Heading className="text-lg font-medium">{analysisResult.productName}</Heading>
                     <Text className="text-sm text-gray-500">
-                      {analysisResult.matchedInCatalog ? "Product identified in our catalog" : "Product might not be from our store"}
+                      {analysisResult.matchedInCatalog ? 
+                        "Product identified in our catalog" : 
+                        "Product might not be from our store"}
                     </Text>
                   </div>
-                  <div className="bg-blue-50 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                  <div className={`px-2 py-1 rounded text-xs font-medium ${
+                    analysisResult.confidenceScore > 0.8 
+                      ? 'bg-green-50 text-green-800' 
+                      : analysisResult.confidenceScore > 0.6 
+                      ? 'bg-blue-50 text-blue-800'
+                      : 'bg-amber-50 text-amber-800'
+                  }`}>
                     {Math.round(analysisResult.confidenceScore * 100)}% match
                   </div>
                 </div>
                 
                 {analysisResult.purchaseInfo ? (
-                  <div className="mb-4">
-                    <div className="text-sm text-gray-600 mb-1">
-                      Purchased on {formatDate(analysisResult.purchaseInfo.purchaseDate)}
-                    </div>
-                    <div className="text-sm text-gray-600 mb-3">
-                      Original size: {analysisResult.purchaseInfo.originalQuantity}
+                  <div className="mb-4 bg-gray-50 p-3 rounded-md">
+                    <h3 className="text-sm font-medium mb-1">Purchase History</h3>
+                    <div className="text-sm text-gray-600">
+                      <p>Purchased on {formatDate(analysisResult.purchaseInfo.purchaseDate)}</p>
+                      <p>Original size: {analysisResult.purchaseInfo.originalQuantity}</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="mb-4 text-sm text-amber-600 flex items-center gap-1.5">
+                  <div className="mb-4 text-sm text-amber-600 flex items-center gap-1.5 bg-amber-50 p-3 rounded-md">
                     <AlertCircle size={16} />
                     Purchase history not found for this product
                   </div>
@@ -345,18 +353,54 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
                     <span className="text-sm font-medium">Product Remaining</span>
                     <span className="text-sm font-medium">{analysisResult.estimatedRemainingPercentage}%</span>
                   </div>
-                  <Progress value={analysisResult.estimatedRemainingPercentage} className="h-2.5" />
+                  <Progress 
+                    value={analysisResult.estimatedRemainingPercentage} 
+                    className="h-2.5" 
+                    indicatorClassName={
+                      analysisResult.estimatedRemainingPercentage < 15 ? "bg-red-500" : 
+                      analysisResult.estimatedRemainingPercentage < 30 ? "bg-amber-500" : 
+                      "bg-blue-600"
+                    }
+                  />
                 </div>
                 
                 {analysisResult.estimatedDaysRemaining > 0 && (
-                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-md mb-4">
+                  <div className={`p-4 rounded-md mb-4 ${
+                    analysisResult.estimatedDaysRemaining <= 7 
+                      ? 'bg-red-50 border border-red-200'
+                      : analysisResult.estimatedDaysRemaining <= 14
+                      ? 'bg-amber-50 border border-amber-200'
+                      : 'bg-blue-50 border border-blue-200'
+                  }`}>
                     <div className="flex gap-2 items-center mb-1">
-                      <Calendar size={18} className="text-amber-600" />
-                      <Heading className="text-amber-800 text-base font-medium">Time to Reorder</Heading>
+                      <Calendar size={18} className={
+                        analysisResult.estimatedDaysRemaining <= 7 
+                          ? 'text-red-600'
+                          : analysisResult.estimatedDaysRemaining <= 14
+                          ? 'text-amber-600'
+                          : 'text-blue-600'
+                      } />
+                      <Heading className={`text-base font-medium ${
+                        analysisResult.estimatedDaysRemaining <= 7 
+                          ? 'text-red-800'
+                          : analysisResult.estimatedDaysRemaining <= 14
+                          ? 'text-amber-800'
+                          : 'text-blue-800'
+                      }`}>
+                        Time to Reorder
+                      </Heading>
                     </div>
-                    <Text className="text-amber-700">
+                    <Text className={
+                      analysisResult.estimatedDaysRemaining <= 7 
+                        ? 'text-red-700'
+                        : analysisResult.estimatedDaysRemaining <= 14
+                        ? 'text-amber-700'
+                        : 'text-blue-700'
+                    }>
                       {analysisResult.estimatedDaysRemaining <= 7 ? (
                         <span className="font-medium">Your product will run out in approximately {analysisResult.estimatedDaysRemaining} days. We recommend reordering soon.</span>
+                      ) : analysisResult.estimatedDaysRemaining <= 14 ? (
+                        <span>Your product will run out in about {analysisResult.estimatedDaysRemaining} days. Consider reordering in the next week.</span>
                       ) : (
                         <span>Your product will last approximately {analysisResult.estimatedDaysRemaining} days.</span>
                       )}
@@ -365,8 +409,12 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
                 )}
                 
                 {deliveryEstimate && (
-                  <div className="text-sm text-gray-600 mb-4">
-                    Estimated delivery: {deliveryEstimate.minDays}-{deliveryEstimate.maxDays} days
+                  <div className="text-sm bg-green-50 p-3 rounded-md text-green-700 border border-green-200 mb-4">
+                    <p className="font-medium mb-1">Delivery Estimate</p>
+                    <p>Your order will arrive in {deliveryEstimate.minDays}-{deliveryEstimate.maxDays} days</p>
+                    {analysisResult.estimatedDaysRemaining > deliveryEstimate.maxDays && (
+                      <p className="text-xs mt-1">Your product will arrive before you run out!</p>
+                    )}
                   </div>
                 )}
                 
@@ -393,7 +441,6 @@ const ProductImageAnalyzer: React.FC<ProductImageAnalyzerProps> = ({
         </div>
       )}
       
-      {/* Information section */}
       <div className="border-t pt-4 mt-2">
         <Heading className="text-lg font-medium mb-2">How It Works</Heading>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">

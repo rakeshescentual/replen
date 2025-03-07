@@ -146,7 +146,7 @@ gadget.routes.get("/api/products/:id/value", async (req, res) => {
 
 import { useState, useEffect } from 'react';
 
-const ProductValueMetrics = ({ productId }) => {
+const ProductValueMetrics = ({ productId = "123" }: { productId?: string }) => {
   const [valueMetrics, setValueMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [usageFrequency, setUsageFrequency] = useState(1);
