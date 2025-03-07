@@ -1,4 +1,3 @@
-
 // This service provides AI-powered predictions for product lifespans and value metrics
 
 export interface UsageDataPoint {
@@ -15,6 +14,20 @@ export interface ProductPrediction {
   recommendedSubscriptionInterval: string;
   confidenceScore: number;
   dataPointsAnalyzed: number;
+}
+
+// New interface for image recognition results
+export interface ImageRecognitionResult {
+  productId: string;
+  confidenceScore: number;
+  productName: string;
+  estimatedRemainingPercentage: number;
+  estimatedDaysRemaining: number;
+  purchaseInfo?: {
+    purchaseDate: Date;
+    originalQuantity: string;
+  };
+  matchedInCatalog: boolean;
 }
 
 export class PredictiveAnalysisService {
@@ -265,6 +278,155 @@ export class PredictiveAnalysisService {
       standardDeviation,
       dataPoints: Math.floor(Math.random() * 10000) + 5000, // 5000-15000 data points
       reliabilityScore: 0.75 + (Math.random() * 0.2) // 75-95% reliability
+    };
+  }
+
+  // NEW METHODS FOR IMAGE RECOGNITION AND PRODUCT IDENTIFICATION
+
+  // Process product image to recognize product and estimate remaining amount
+  public static async processProductImage(imageData: string, customerId?: string): Promise<ImageRecognitionResult> {
+    console.log(`Processing product image for customer ID: ${customerId || 'anonymous'}`);
+    
+    // In a real implementation, this would:
+    // 1. Call a computer vision API to analyze the image
+    // 2. Extract product details from the image
+    // 3. Estimate remaining product percentage
+    
+    // Simulate API delay for image processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // For demo, generate a simulated result
+    // In production, this would be the result from the image recognition API
+    const recognitionData = this.simulateImageRecognition(imageData);
+    
+    // If we have a customer ID, try to match with their purchase history
+    if (customerId) {
+      const purchaseInfo = await this.matchWithCustomerPurchases(
+        recognitionData.productId, 
+        customerId
+      );
+      
+      if (purchaseInfo) {
+        recognitionData.purchaseInfo = purchaseInfo;
+        
+        // Calculate days remaining based on purchase date, typical lifespan, and remaining percentage
+        const purchaseDays = Math.floor((Date.now() - purchaseInfo.purchaseDate.getTime()) / (1000 * 60 * 60 * 24));
+        const prediction = await this.getPredictionForProduct(recognitionData.productId);
+        
+        // Calculate estimated days remaining based on remaining percentage and predicted lifespan
+        const totalExpectedLifespan = prediction.predictedLifespan;
+        const usedPercentage = 100 - recognitionData.estimatedRemainingPercentage;
+        const daysRemaining = Math.max(0, Math.round(totalExpectedLifespan * (recognitionData.estimatedRemainingPercentage / 100)));
+        
+        recognitionData.estimatedDaysRemaining = daysRemaining;
+      }
+    }
+    
+    return recognitionData;
+  }
+  
+  // Match recognized product with customer purchase history
+  private static async matchWithCustomerPurchases(
+    productId: string, 
+    customerId: string
+  ): Promise<{ purchaseDate: Date; originalQuantity: string } | undefined> {
+    console.log(`Matching product ${productId} with customer ${customerId} purchase history`);
+    
+    // In a real implementation, this would query the Shopify API or database
+    // to find the customer's purchase history for this product
+    
+    // Simulate API delay for database query
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Find relevant purchases in usage data (most recent first)
+    const customerPurchases = this.usageData
+      .filter(dp => dp.customerId === customerId && dp.productId === productId)
+      .sort((a, b) => b.purchaseDate.getTime() - a.purchaseDate.getTime());
+    
+    if (customerPurchases.length > 0) {
+      const mostRecent = customerPurchases[0];
+      return {
+        purchaseDate: mostRecent.purchaseDate,
+        originalQuantity: this.getProductQuantityById(productId)
+      };
+    }
+    
+    // If no match in our system but product is recognized, return simulated data
+    // In production, you'd want to be more careful about this
+    if (Math.random() > 0.3) { // 70% chance to find a match for demo purposes
+      const randomPurchaseDate = new Date();
+      randomPurchaseDate.setDate(randomPurchaseDate.getDate() - Math.floor(Math.random() * 60 + 15)); // 15-75 days ago
+      
+      return {
+        purchaseDate: randomPurchaseDate,
+        originalQuantity: this.getProductQuantityById(productId)
+      };
+    }
+    
+    return undefined;
+  }
+  
+  // Helper method to get product quantity by ID
+  private static getProductQuantityById(productId: string): string {
+    // This would be from your product database in production
+    const quantityMap: Record<string, string> = {
+      "1": "50ml",
+      "2": "30ml",
+      "3": "60 capsules",
+      "4": "250ml",
+      "5": "75ml",
+    };
+    
+    return quantityMap[productId] || "Standard Size";
+  }
+  
+  // Simulate image recognition for demonstration
+  private static simulateImageRecognition(imageData: string): ImageRecognitionResult {
+    // In real implementation, this would call a computer vision API
+    // For demo, we're using the first few chars of the base64 to simulate different products
+    // This is just for demonstration - in production you'd use a real ML model
+    
+    const sampleBase64Prefix = imageData.slice(0, 10);
+    const hash = Array.from(sampleBase64Prefix).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const productIndex = Math.abs(hash % 5) + 1; // Products 1-5
+    
+    const products = [
+      { id: "1", name: "Daily Face Moisturizer" },
+      { id: "2", name: "Anti-Aging Serum" },
+      { id: "3", name: "Vitamin C Supplements" },
+      { id: "4", name: "Shampoo" },
+      { id: "5", name: "Toothpaste" }
+    ];
+    
+    const product = products[productIndex - 1];
+    
+    // Estimate remaining percentage based on simulated image analysis
+    const estimatedRemainingPercentage = Math.floor(Math.random() * 40) + 10; // 10-50% remaining
+    
+    return {
+      productId: product.id,
+      productName: product.name,
+      confidenceScore: 0.7 + (Math.random() * 0.25), // 70-95% confidence
+      estimatedRemainingPercentage,
+      estimatedDaysRemaining: 0, // Will be calculated if customer purchase history is available
+      matchedInCatalog: true
+    };
+  }
+  
+  // Get delivery estimate for a reorder
+  public static async getReorderDeliveryEstimate(productId: string, zipCode?: string): Promise<{
+    minDays: number;
+    maxDays: number;
+    inStock: boolean;
+  }> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    // In production, this would check actual inventory and shipping estimates
+    return {
+      minDays: 2,
+      maxDays: 4,
+      inStock: Math.random() > 0.1 // 90% chance it's in stock for demo
     };
   }
 }
