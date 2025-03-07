@@ -4,6 +4,7 @@ export interface PersonalizedProduct {
   title: string;
   image: string;
   price: number;
+  originalPrice?: number;
   valueScore: number;
   category: string;
   personalizedReason: string;
