@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, Heading, Text } from "@/components/ui/shadcn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -458,7 +459,7 @@ export default function(gadget) {
                         <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-green-600 mt-0.5 flex-shrink-0" />
                         <div>
                           <span className="font-medium">App performance</span>
-                          <p className="mt-0.5">Optimized for speed with < 400ms load times</p>
+                          <p className="mt-0.5">Optimized for speed with &lt; 400ms load times</p>
                         </div>
                       </li>
                       <li className="flex items-start">
