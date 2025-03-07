@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, Heading, Text } from "@/components/ui/shadcn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -146,7 +147,7 @@ gadget.routes.get("/api/products/:id/value", async (req, res) => {
 
 import { useState, useEffect } from 'react';
 
-const ProductValueMetrics = ({ productId = "123" }: { productId?: string }) => {
+const ProductValueMetrics = ({ productId }) => {
   const [valueMetrics, setValueMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [usageFrequency, setUsageFrequency] = useState(1);
@@ -384,13 +385,13 @@ POST https://api.replenishreminder.app/api/webhooks/register
                   <pre className="text-sm whitespace-pre-wrap">
 {`{
   "event": "reminder.sent",
-  "timestamp": "2023-10-15T10:30:00Z",
+  "timestamp": "2024-06-28T10:30:00Z",
   "data": {
     "customer_id": "5678901234",
     "email": "customer@example.com",
     "product_id": "123456789",
     "product_title": "Daily Face Moisturizer",
-    "estimated_depletion_date": "2023-10-20T00:00:00Z",
+    "estimated_depletion_date": "2024-07-05T00:00:00Z",
     "reminder_template": "standard_reminder"
   }
 }`}
