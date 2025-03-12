@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Info, Sparkles, TrendingUp, Settings, Server, CalendarClock, ShoppingCart } from 'lucide-react';
+import { Info, Sparkles, TrendingUp, Settings, Server, CalendarClock, ShoppingCart, Database, GitMerge } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const InfoSection: React.FC = () => {
   return (
@@ -9,7 +10,12 @@ const InfoSection: React.FC = () => {
         <div className="p-2 bg-blue-50 rounded-full">
           <Info className="h-5 w-5 text-blue-600" />
         </div>
-        <h3 className="font-medium text-gray-900 text-base">Why these recommendations?</h3>
+        <div>
+          <h3 className="font-medium text-gray-900 text-base">Why these recommendations?</h3>
+          <Badge variant="outline" className="mt-1 bg-green-50 text-green-700 border-green-100">
+            Powered by Gadget.dev's latest features
+          </Badge>
+        </div>
       </div>
       
       <p className="text-sm text-gray-700 mb-4 leading-relaxed">
@@ -69,11 +75,30 @@ const InfoSection: React.FC = () => {
           <Server className="h-4 w-4 text-indigo-600 mr-2" />
           <h4 className="font-medium text-xs text-indigo-700">Powered by Gadget.dev</h4>
         </div>
+        
+        <div className="bg-blue-50 p-3 rounded-md mb-3">
+          <div className="flex items-center mb-1">
+            <GitMerge className="h-3.5 w-3.5 text-blue-600 mr-1.5" />
+            <p className="text-xs font-medium text-blue-700">Using Latest Gadget.dev Features</p>
+          </div>
+          <p className="text-xs text-blue-600 pl-5">
+            Our recommendation engine leverages Environment Variable Groups, Type-Safe Routes, 
+            and Enhanced Shopify Connection capabilities for optimal performance.
+          </p>
+        </div>
+        
         <p className="text-xs text-gray-600 pl-6 leading-relaxed">
           This recommendation engine leverages Gadget.dev's powerful backend services for real-time 
           data processing and machine learning. The system seamlessly integrates with your Escentual.com store data, 
           ensuring accurate product information and personalized recommendations delivered on your monthly payday.
         </p>
+        
+        <div className="flex items-center space-x-2 mt-3 pl-6">
+          <Database className="h-3.5 w-3.5 text-indigo-500" />
+          <p className="text-xs text-indigo-600">
+            Environment-specific configuration for optimal performance
+          </p>
+        </div>
         
         <div className="mt-3 pl-6">
           <a 

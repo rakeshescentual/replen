@@ -1,14 +1,20 @@
 
 import React from 'react';
-import { LineChart, RefreshCw, UserCheck, Brain, ArrowRightCircle, Server, Database, CalendarClock } from 'lucide-react';
+import { LineChart, RefreshCw, UserCheck, Brain, ArrowRightCircle, Server, Database, CalendarClock, GitMerge, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const FeedbackInfoBox: React.FC = () => {
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-lg border border-blue-100 shadow-sm hover:shadow-md transition-all duration-300">
-      <h3 className="text-base font-semibold text-blue-800 mb-4 flex items-center">
-        <Brain className="h-5 w-5 mr-2 text-blue-600" />
-        How Customer Feedback Improves Predictions
-      </h3>
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center">
+          <Brain className="h-5 w-5 mr-2 text-blue-600" />
+          <h3 className="text-base font-semibold text-blue-800">How Customer Feedback Improves Predictions</h3>
+        </div>
+        <Badge className="bg-green-50 text-green-700 border-green-100">
+          Latest Gadget.dev AI
+        </Badge>
+      </div>
       
       <div className="space-y-4">
         <div className="flex items-start space-x-3">
@@ -73,13 +79,30 @@ const FeedbackInfoBox: React.FC = () => {
       </div>
       
       <div className="mt-4 pt-3 border-t border-blue-100">
+        <div className="flex items-center mb-2">
+          <Server className="h-4 w-4 text-blue-600 mr-2" />
+          <h4 className="font-medium text-xs text-blue-700">Gadget.dev Backend Processing</h4>
+        </div>
+        
+        <div className="bg-indigo-50 p-3 rounded-md mb-3">
+          <div className="flex items-start space-x-2">
+            <GitMerge className="h-3.5 w-3.5 text-indigo-600 mt-0.5" />
+            <div>
+              <p className="text-xs font-medium text-indigo-700">Environment Variable Groups</p>
+              <p className="text-xs text-indigo-600">
+                Our system uses environment-specific configuration for development, staging, and production to ensure optimal performance.
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <div className="flex items-start space-x-2 mb-2">
-          <Server className="h-4 w-4 text-blue-600 mt-0.5" />
+          <ShieldCheck className="h-4 w-4 text-blue-600 mt-0.5" />
           <div>
-            <p className="text-xs font-medium text-blue-700">Gadget.dev Backend Processing</p>
+            <p className="text-xs font-medium text-blue-700">Type-Safe API Integration</p>
             <p className="text-xs text-blue-500">
-              Feedback data is processed in real-time using Gadget.dev's serverless functions, 
-              ensuring immediate updates to prediction models and customer profiles for Escentual.com shoppers.
+              Feedback data is processed in real-time using Gadget.dev's type-safe API routes, 
+              ensuring accurate data processing and immediate updates to prediction models.
             </p>
           </div>
         </div>

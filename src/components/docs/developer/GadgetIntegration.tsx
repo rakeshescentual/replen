@@ -2,6 +2,7 @@
 import React from "react";
 import { Heading, Text } from "@/components/ui/shadcn";
 import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Server, GitBranch, Zap, Lock } from "lucide-react";
 
 const GadgetIntegration = () => {
   return (
@@ -9,7 +10,14 @@ const GadgetIntegration = () => {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <Heading className="text-xl font-semibold">Gadget.dev Implementation Guide</Heading>
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Recommended</Badge>
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Latest Version</Badge>
+        </div>
+        
+        <div className="flex items-start space-x-2 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+          <Text className="text-blue-700">
+            This guide incorporates the latest Gadget.dev features including Type Route Params, Environment Variable Groups, and improved Shopify connection capabilities.
+          </Text>
         </div>
         
         <Text className="mb-4">
@@ -24,6 +32,7 @@ const GadgetIntegration = () => {
             <li>Escentual.com API credentials and access tokens</li>
             <li>Product database access for value metric calculations</li>
             <li>Customer data access (with appropriate GDPR compliance)</li>
+            <li>Environment Variable Groups configured for different deployment stages</li>
           </ul>
         </div>
 
@@ -47,17 +56,24 @@ const GadgetIntegration = () => {
   - costPerDay: Decimal
   - daysLasting: Integer
 
-// Step 3: Configure authentication
+// Step 3: Configure environment variables and authentication
 - Set up API key authentication
+- Create Environment Variable Groups for development, staging, and production
 - Configure CORS to allow requests from Escentual.com domains
 - Set up appropriate role-based access controls`}
           </pre>
         </div>
 
-        <Heading className="text-lg font-semibold mb-3">2. Implementing Value Calculation Functions</Heading>
+        <Heading className="text-lg font-semibold mb-3">2. Implementing Value Calculation Functions with Type-Safe Routes</Heading>
         <div className="bg-gray-100 p-4 rounded-md mb-6 overflow-x-auto">
           <pre className="text-sm whitespace-pre-wrap">
-{`// Create a new Gadget.dev action for value calculations
+{`// Define type-safe route parameters
+export type ValueCalculationParams = {
+  productId: string;
+  usageFrequency?: number;
+};
+
+// Create a new Gadget.dev action for value calculations
 export async function calculateProductValue(product, usageFrequency) {
   // Value Intelligence Algorithm (VIA)
   const estimatedUses = 32 + (product.price * 0.92);
@@ -80,69 +96,93 @@ export async function calculateProductValue(product, usageFrequency) {
   };
 }
 
-// Register this action in your Gadget.dev application
+// Register this action in your Gadget.dev application with typed params
 export default function(gadget) {
   gadget.actions.register("calculateProductValue", calculateProductValue);
+  
+  // Use type-safe routes for better developer experience
+  gadget.routes.get<ValueCalculationParams>(
+    "/api/products/:productId/value", 
+    { middleware: [gadget.auth.requireApiKey] },
+    async (req, res) => {
+      // Implementation using typed params
+      const { productId, usageFrequency = 1 } = req.params;
+      // Rest of implementation
+    }
+  );
 }`}
           </pre>
         </div>
 
-        <Heading className="text-lg font-semibold mb-3">3. Integration with Escentual.com</Heading>
+        <Heading className="text-lg font-semibold mb-3">3. Integration with Escentual.com using Enhanced Shopify Connection</Heading>
         <div className="bg-gray-100 p-4 rounded-md mb-6 overflow-x-auto">
           <pre className="text-sm whitespace-pre-wrap">
-{`// In your Gadget.dev application, create a sync connection to Escentual.com
-// Configure with API credentials
+{`// In your Gadget.dev application, use the enhanced Shopify connection
+// Configure with API credentials and appropriate scopes
 
-// Example API route implementation
-gadget.routes.get("/api/products/:id/value", async (req, res) => {
-  try {
-    // Get product details from Escentual.com
-    const product = await escentualAPI.getProduct(req.params.id);
-    
-    // Get user preferences (if available)
-    const usageFrequency = req.query.usageFrequency || 1;
-    
-    // Calculate value metrics
-    const valueMetrics = await calculateProductValue(product, usageFrequency);
-    
-    // Return value metrics
-    res.json({
-      product: {
-        id: product.id,
-        title: product.title,
-        price: product.price
-      },
-      valueMetrics
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+// Example API route implementation with type-safe params
+gadget.routes.get<{ id: string }>(
+  "/api/products/:id/value", 
+  { middleware: [gadget.auth.requireApiKey] },
+  async (req, res) => {
+    try {
+      // Get product details from Escentual.com's Shopify store
+      const product = await gadget.connections.shopify.get(\`/products/\${req.params.id}.json\`);
+      
+      // Get user preferences (if available)
+      const usageFrequency = req.query.usageFrequency || 1;
+      
+      // Calculate value metrics
+      const valueMetrics = await calculateProductValue(product.product, usageFrequency);
+      
+      // Return value metrics
+      res.json({
+        product: {
+          id: product.product.id,
+          title: product.product.title,
+          price: product.product.variants[0].price
+        },
+        valueMetrics
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
-});`}
+);`}
           </pre>
         </div>
 
-        <Heading className="text-lg font-semibold mb-3">4. Frontend Integration</Heading>
+        <Heading className="text-lg font-semibold mb-3">4. Frontend Integration with Environment-Specific Configuration</Heading>
         <div className="bg-gray-100 p-4 rounded-md mb-6 overflow-x-auto">
           <pre className="text-sm whitespace-pre-wrap">
 {`// Sample React code for frontend integration
 // This would be implemented on Escentual.com
 
 import { useState, useEffect } from 'react';
+import { useGadgetConnection } from '@gadgetinc/react';
 
-const ProductValueMetrics = ({ productId = "123" }) => {
+const ProductValueMetrics = ({ productId, environment = "production" }) => {
   const [valueMetrics, setValueMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [usageFrequency, setUsageFrequency] = useState(1);
+  
+  // Use the Gadget React client with environment-specific config
+  const { api, isConnected } = useGadgetConnection({
+    environment,  // Uses environment variable groups for configuration
+    apiKey: process.env.GADGET_API_KEY
+  });
 
   useEffect(() => {
     const fetchValueMetrics = async () => {
+      if (!isConnected) return;
+      
       setLoading(true);
       try {
-        const response = await fetch(
-          \`https://escentual-value-metrics.gadget.app/api/products/\${productId}/value?usageFrequency=\${usageFrequency}\`
+        const response = await api.get(
+          \`/products/\${productId}/value\`,
+          { params: { usageFrequency } }
         );
-        const data = await response.json();
-        setValueMetrics(data.valueMetrics);
+        setValueMetrics(response.data.valueMetrics);
       } catch (error) {
         console.error("Error fetching value metrics:", error);
       } finally {
@@ -151,7 +191,7 @@ const ProductValueMetrics = ({ productId = "123" }) => {
     };
 
     fetchValueMetrics();
-  }, [productId, usageFrequency]);
+  }, [productId, usageFrequency, isConnected, api]);
 
   if (loading) return <div>Loading value metrics...</div>;
 
@@ -167,7 +207,49 @@ const ProductValueMetrics = ({ productId = "123" }) => {
           </pre>
         </div>
 
-        <Heading className="text-lg font-semibold mb-3">5. Deployment Checklist</Heading>
+        <Heading className="text-lg font-semibold mb-3">5. Enhanced Security Features</Heading>
+        <div className="bg-gray-100 p-4 rounded-md mb-6 overflow-x-auto">
+          <pre className="text-sm whitespace-pre-wrap">
+{`// Setting up enhanced security with role-based access
+// In your Gadget.dev application
+
+// Define roles and permissions
+gadget.roles.define("admin", {
+  description: "Full access to all resources",
+  permissions: ["*:*"]
+});
+
+gadget.roles.define("analyst", {
+  description: "Read-only access to value metrics",
+  permissions: ["products:read", "valueMetrics:read"]
+});
+
+gadget.roles.define("customer", {
+  description: "Access to own data only",
+  permissions: ["own:read"]
+});
+
+// Secure routes with role-based access control
+gadget.routes.get(
+  "/api/analytics/dashboard", 
+  { 
+    middleware: [
+      gadget.auth.requireApiKey,
+      gadget.auth.requireRole(["admin", "analyst"])
+    ]
+  },
+  async (req, res) => {
+    // Implementation that requires admin or analyst role
+  }
+);
+
+// Use environment variables for sensitive configuration
+const apiKeys = gadget.env.get("EXTERNAL_API_KEYS");
+const shopifySecret = gadget.env.get("SHOPIFY_API_SECRET");`}
+          </pre>
+        </div>
+
+        <Heading className="text-lg font-semibold mb-3">6. Deployment with Environment Variable Groups</Heading>
         <div className="rounded-md overflow-hidden border border-gray-200">
           <table className="min-w-full bg-white">
             <thead className="bg-gray-50">
@@ -184,6 +266,11 @@ const ProductValueMetrics = ({ productId = "123" }) => {
                 <td className="py-2 px-4 text-sm">Required</td>
               </tr>
               <tr>
+                <td className="py-2 px-4 text-sm">Configure Environment Variable Groups</td>
+                <td className="py-2 px-4 text-sm">Set up dev, staging, and production environments</td>
+                <td className="py-2 px-4 text-sm">Required</td>
+              </tr>
+              <tr>
                 <td className="py-2 px-4 text-sm">Configure data models</td>
                 <td className="py-2 px-4 text-sm">Products, value metrics, customer preferences</td>
                 <td className="py-2 px-4 text-sm">Required</td>
@@ -194,18 +281,23 @@ const ProductValueMetrics = ({ productId = "123" }) => {
                 <td className="py-2 px-4 text-sm">Required</td>
               </tr>
               <tr>
-                <td className="py-2 px-4 text-sm">Create API endpoints</td>
-                <td className="py-2 px-4 text-sm">RESTful endpoints for frontend integration</td>
+                <td className="py-2 px-4 text-sm">Create type-safe API endpoints</td>
+                <td className="py-2 px-4 text-sm">RESTful endpoints with typed parameters</td>
                 <td className="py-2 px-4 text-sm">Required</td>
               </tr>
               <tr>
-                <td className="py-2 px-4 text-sm">Set up Escentual.com connections</td>
+                <td className="py-2 px-4 text-sm">Set up Escentual.com Shopify connections</td>
                 <td className="py-2 px-4 text-sm">API credentials, authentication, data access</td>
                 <td className="py-2 px-4 text-sm">Required</td>
               </tr>
               <tr>
                 <td className="py-2 px-4 text-sm">Configure CORS</td>
                 <td className="py-2 px-4 text-sm">Allow cross-origin requests from Escentual.com</td>
+                <td className="py-2 px-4 text-sm">Required</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-4 text-sm">Implement role-based access control</td>
+                <td className="py-2 px-4 text-sm">Define roles and secure routes</td>
                 <td className="py-2 px-4 text-sm">Required</td>
               </tr>
               <tr>
@@ -225,6 +317,38 @@ const ProductValueMetrics = ({ productId = "123" }) => {
               </tr>
             </tbody>
           </table>
+        </div>
+        
+        <div className="mt-6 flex space-x-3">
+          <div className="flex-1 p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <div className="flex items-center gap-2 mb-2">
+              <GitBranch className="h-5 w-5 text-blue-600" />
+              <h4 className="font-medium text-blue-800">Environment Variable Groups</h4>
+            </div>
+            <p className="text-sm text-blue-600">
+              Use Gadget.dev's Environment Variable Groups to manage configuration across development, staging, and production environments.
+            </p>
+          </div>
+          
+          <div className="flex-1 p-4 bg-purple-50 rounded-lg border border-purple-100">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="h-5 w-5 text-purple-600" />
+              <h4 className="font-medium text-purple-800">Type-Safe Routes</h4>
+            </div>
+            <p className="text-sm text-purple-600">
+              Leverage Gadget.dev's typed route parameters for improved type safety and better developer experience.
+            </p>
+          </div>
+          
+          <div className="flex-1 p-4 bg-green-50 rounded-lg border border-green-100">
+            <div className="flex items-center gap-2 mb-2">
+              <Lock className="h-5 w-5 text-green-600" />
+              <h4 className="font-medium text-green-800">Enhanced Security</h4>
+            </div>
+            <p className="text-sm text-green-600">
+              Implement role-based access control and use secure environment variables for sensitive configuration.
+            </p>
+          </div>
         </div>
       </section>
     </div>
