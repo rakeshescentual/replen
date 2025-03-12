@@ -37,14 +37,14 @@ export const getScoreColorClass = (score: number): string => {
   return "bg-gray-100 text-gray-800 border-gray-200";
 };
 
-// New utility function for getting color class for payday alignment indicator
+// Utility function for getting color class for payday alignment indicator
 export const getPaydayAlignmentClass = (isAligned: boolean): string => {
   return isAligned 
     ? "bg-green-50 text-green-700 border-green-100" 
     : "bg-gray-50 text-gray-600 border-gray-100";
 };
 
-// New utility function for value savings badge
+// Utility function for value savings badge
 export const getValueSavingsClass = (savingsPercent: number): string => {
   if (savingsPercent >= 30) return "bg-green-100 text-green-800 border-green-200";
   if (savingsPercent >= 20) return "bg-emerald-100 text-emerald-800 border-emerald-200";
@@ -52,7 +52,8 @@ export const getValueSavingsClass = (savingsPercent: number): string => {
   return "bg-blue-50 text-blue-800 border-blue-100";
 };
 
-// New types for Gadget.dev integration with Shopify
+// Enhanced types for Gadget.dev integration with Shopify
+// Updated to align with Gadget.dev's type-safe route parameters
 export interface ShopifyProductMetafields {
   valueScore?: number;
   costPerDay?: number;
@@ -62,6 +63,24 @@ export interface ShopifyProductMetafields {
   paydayAlignmentScore?: number;
 }
 
+// Type-safe route parameter types for Gadget.dev API requests
+export interface ProductRouteParams {
+  id: string;
+  includes?: string[];
+}
+
+export interface CategoryRouteParams {
+  category: CategoryId;
+  limit?: number;
+  sort?: 'value' | 'match' | 'price';
+}
+
+export interface CustomerRouteParams {
+  customerId: string;
+  productTypes?: CategoryId[];
+}
+
+// Gadget.dev product response format using their enhanced Shopify connection
 export interface GadgetProductResponse {
   id: string;
   title: string;
@@ -74,6 +93,7 @@ export interface GadgetProductResponse {
 }
 
 // Converter function to transform Gadget API responses to our internal format
+// Updated to align with Gadget.dev's latest best practices
 export const convertGadgetProductToPersonalized = (
   gadgetProduct: GadgetProductResponse
 ): PersonalizedProduct => {
@@ -98,4 +118,12 @@ export const convertGadgetProductToPersonalized = (
       ? Math.floor((gadgetProduct.metafields.valueScore - 50) / 2)
       : undefined
   };
+};
+
+// New utility for environment-specific configuration
+export const getGadgetEnvironment = (): 'development' | 'staging' | 'production' => {
+  const hostname = window.location.hostname;
+  if (hostname.includes('dev') || hostname.includes('localhost')) return 'development';
+  if (hostname.includes('staging')) return 'staging';
+  return 'production';
 };

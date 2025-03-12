@@ -2,8 +2,14 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Heart, ShoppingCart, Star } from "lucide-react";
-import { PersonalizedProduct, getMatchColorClass, getScoreColorClass } from '@/types/personalized-recommendations';
+import { Clock, Heart, ShoppingCart, Star, Calendar, Percent } from "lucide-react";
+import { 
+  PersonalizedProduct, 
+  getMatchColorClass, 
+  getScoreColorClass,
+  getPaydayAlignmentClass
+} from '@/types/personalized-recommendations';
+import { gadgetEnvironment } from '@/utils/GadgetEnvironmentService';
 
 interface ProductCardProps {
   product: PersonalizedProduct;
@@ -18,6 +24,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onAddToWishlist,
   onSubscribe
 }) => {
+  // Using environment-specific feature flags for enhanced product card features
+  const showDaysRemaining = gadgetEnvironment.isFeatureEnabled('showProductLifespan');
+  const showPaydayAlignment = gadgetEnvironment.isFeatureEnabled('showPaydayAlignment') || true;
+  
   return (
     <div className="py-4 px-4 first:pt-4 last:pb-4 hover:bg-gray-50 transition-colors duration-200">
       <div className="flex rounded-lg">
@@ -46,8 +56,33 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Badge variant="outline" className={`${getMatchColorClass(product.matchScore)} font-medium`}>
                   {product.matchScore}% Match
                 </Badge>
+                
+                {/* Show payday alignment badge if feature is enabled */}
+                {showPaydayAlignment && product.paydayAligned !== undefined && (
+                  <Badge variant="outline" className={`${getPaydayAlignmentClass(product.paydayAligned)} font-medium`}>
+                    <Calendar className="h-3 w-3 mr-1" />
+                    {product.paydayAligned ? 'Payday Aligned' : 'Not Payday Aligned'}
+                  </Badge>
+                )}
               </div>
+              
               <p className="text-sm text-gray-600 mt-2 line-clamp-2">{product.personalizedReason}</p>
+              
+              {/* Show days remaining if feature is enabled and data is available */}
+              {showDaysRemaining && product.estimatedDaysRemaining && (
+                <div className="mt-2 text-sm text-blue-600 flex items-center">
+                  <Clock className="h-3 w-3 mr-1" />
+                  <span>Estimated to last {product.estimatedDaysRemaining} days</span>
+                </div>
+              )}
+              
+              {/* Show value savings if available */}
+              {product.valueSavings && (
+                <div className="mt-1 text-sm text-green-600 flex items-center">
+                  <Percent className="h-3 w-3 mr-1" />
+                  <span>{product.valueSavings}% better value than average</span>
+                </div>
+              )}
             </div>
             <div className="text-right flex flex-col items-end">
               <span className="font-medium text-gray-900">£{product.price.toFixed(2)}</span>
