@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -17,7 +16,9 @@ const PersonalizedValueRecommendations: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<Record<CategoryId, boolean>>({
     'skincare': true,
     'haircare': false,
-    'makeup': false
+    'makeup': false,
+    'fragrance': false,
+    'bodycare': false
   });
   
   const toggleSection = (section: CategoryId) => {
