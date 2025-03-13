@@ -4,7 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   ProductRouteParams, 
   CategoryRouteParams, 
-  CustomerRouteParams 
+  CustomerRouteParams,
+  CategoryId
 } from '@/types/personalized-recommendations';
 import { gadgetEnvironment } from '@/utils/GadgetEnvironmentService';
 
@@ -90,7 +91,7 @@ export function useGadgetTypeRoutes() {
   const getProduct = useCallback(async (params: ProductRouteParams) => {
     return makeRequest<any, ProductRouteParams>(
       `products/${params.id}`,
-      { includes: params.includes || [] }
+      { id: params.id, includes: params.includes || [] }
     );
   }, [makeRequest]);
   
@@ -115,6 +116,7 @@ export function useGadgetTypeRoutes() {
     return makeRequest<any, CustomerRouteParams>(
       `customers/${params.customerId}/recommendations`,
       { 
+        customerId: params.customerId,
         productTypes: params.productTypes || []
       }
     );
