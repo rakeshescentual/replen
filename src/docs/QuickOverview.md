@@ -50,3 +50,13 @@ An AI-powered Shopify Plus app for Escentual.com that sends payday-aligned reple
 - Klaviyo email delivery
 - One-click reordering
 - Environment configuration validation
+
+## Documentation
+
+For more detailed information, please see our comprehensive documentation:
+
+- [Purpose & Core Functionality](./core/Purpose.md)
+- [Technical Architecture](./technical/Architecture.md)
+- [Development Timeline](./development/Timeline.md)
+- [Future Roadmap](./roadmap/FutureRoadmap.md)
+- [Full Documentation Index](./index.md)
