@@ -24,6 +24,17 @@ export class CustomerPaydayService {
   }
   
   /**
+   * Retrieves a customer's payday information
+   * @param customerId The Shopify customer ID
+   * @returns Promise resolving to customer payday data or null if not found
+   */
+  public static async getCustomerPaydayData(
+    customerId: string
+  ): Promise<{ paydayDate: number; paydayFrequency: 'monthly' | 'biweekly' | 'weekly' } | null> {
+    return PaydayAPIService.getCustomerPaydayData(customerId);
+  }
+  
+  /**
    * Calculates the next payday date for a customer
    * @param currentPaydayDate Day of month (1-31)
    * @param paydayFrequency Payment frequency

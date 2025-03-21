@@ -14,8 +14,13 @@
 
 ## Backend Integration
 - Gadget.dev - Backend-as-a-service platform for Shopify integration
+  - Environment Variable Groups - Environment-specific configurations
+  - Type-Safe Routes - Type-safe API endpoint parameters 
+  - Enhanced Shopify Connection - Simplified Shopify API access
 - Klaviyo - Email marketing platform
 
 ## Environment Management
 - Development, Staging, and Production configurations
 - Environment-specific API endpoints and feature flags
+- Gadget.dev Environment Variable Groups for consistent configuration
+
