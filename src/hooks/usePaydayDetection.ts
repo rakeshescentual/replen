@@ -1,6 +1,6 @@
 
 /**
- * Hook for detecting customer payday patterns
+ * Hook for detecting and managing customer payday patterns
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +11,7 @@ export interface UsePaydayDetectionProps {
   customerId?: string;
   orderHistory?: any[];
   enableAutoDetection?: boolean;
+  confidenceThreshold?: number;
 }
 
 export type PaydayFrequency = 'weekly' | 'biweekly' | 'monthly';
@@ -22,65 +23,96 @@ export interface PaydayInfo {
   lastUpdated?: string;
 }
 
+type PaydayDetectionStatus = 'idle' | 'loading' | 'detecting' | 'success' | 'error';
+
 /**
  * Hook for detecting and managing customer payday information
  */
 export function usePaydayDetection({
   customerId,
-  orderHistory,
-  enableAutoDetection = false
+  orderHistory = [],
+  enableAutoDetection = false,
+  confidenceThreshold = 70
 }: UsePaydayDetectionProps = {}) {
   const [paydayInfo, setPaydayInfo] = useState<PaydayInfo | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDetecting, setIsDetecting] = useState<boolean>(false);
+  const [status, setStatus] = useState<PaydayDetectionStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   
   const { toast } = useToast();
   
-  // Fetch existing payday information
+  // Helper to create a standardized timestamp
+  const createTimestamp = useCallback(() => {
+    return new Date().toISOString();
+  }, []);
+  
+  /**
+   * Fetch existing payday information for a customer
+   */
   const fetchPaydayInfo = useCallback(async () => {
-    if (!customerId) return;
+    if (!customerId) return null;
     
-    setIsLoading(true);
+    setStatus('loading');
     setError(null);
     
     try {
       const data = await CustomerPaydayService.getCustomerPaydayData(customerId);
       
       if (data) {
-        setPaydayInfo({
+        const paydayData: PaydayInfo = {
           paydayDate: data.paydayDate,
           paydayFrequency: data.paydayFrequency,
-          confidenceScore: 0, // Not provided by this API, default to 0
-          lastUpdated: new Date().toISOString() // Use current time as we don't get this from the API
-        });
+          confidenceScore: 0, // Not provided by this API
+          lastUpdated: createTimestamp()
+        };
+        
+        setPaydayInfo(paydayData);
+        setStatus('success');
+        return paydayData;
       }
+      
+      setStatus('idle');
+      return null;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch payday information');
-    } finally {
-      setIsLoading(false);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch payday information';
+      setError(errorMessage);
+      setStatus('error');
+      
+      console.error('Error fetching payday information:', err);
+      return null;
     }
-  }, [customerId]);
+  }, [customerId, createTimestamp]);
   
-  // Detect payday pattern from order history
+  /**
+   * Detect payday pattern from order history
+   */
   const detectPaydayPattern = useCallback(async () => {
-    if (!customerId || !orderHistory || orderHistory.length < 2) {
+    // Validate input requirements
+    if (!customerId) {
       toast({
-        title: "Cannot detect pattern",
-        description: "Insufficient order history to detect payday pattern",
+        title: "Missing customer ID",
+        description: "Customer ID is required to detect payday patterns",
         variant: "destructive"
       });
-      return;
+      return null;
     }
     
-    setIsDetecting(true);
+    if (!orderHistory || orderHistory.length < 2) {
+      toast({
+        title: "Insufficient order history",
+        description: "At least 2 orders are required to detect a pattern",
+        variant: "destructive"
+      });
+      return null;
+    }
+    
+    setStatus('detecting');
     setError(null);
     
     try {
       // Extract purchase dates from order history
       const purchaseDates = orderHistory.map(order => new Date(order.processed_at));
       
-      // Use our PaydayPatternService (via CustomerPaydayService) to detect patterns
+      // Use PaydayPatternService to detect patterns
       const patternResult = CustomerPaydayService.detectPaydayPattern(purchaseDates);
       
       if (!patternResult) {
@@ -89,6 +121,7 @@ export function usePaydayDetection({
           description: "Couldn't detect a clear payday pattern from order history",
           variant: "destructive"
         });
+        setStatus('idle');
         return null;
       }
       
@@ -96,28 +129,52 @@ export function usePaydayDetection({
         paydayDate: patternResult.paydayDate,
         paydayFrequency: patternResult.paydayFrequency,
         confidenceScore: patternResult.confidenceScore,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: createTimestamp()
       };
       
       setPaydayInfo(detectedInfo);
+      setStatus('success');
       
-      // Update in backend if auto-detection is enabled
-      if (enableAutoDetection && patternResult.confidenceScore > 70) {
+      // Update in backend if auto-detection is enabled and confidence is high enough
+      if (enableAutoDetection && patternResult.confidenceScore >= confidenceThreshold) {
         await updatePaydayInfo(detectedInfo);
+        
+        toast({
+          title: "Payday pattern detected",
+          description: `Detected ${detectedInfo.paydayFrequency} pattern with ${detectedInfo.confidenceScore}% confidence`,
+        });
+      } else if (patternResult.confidenceScore < confidenceThreshold) {
+        toast({
+          title: "Low confidence pattern",
+          description: `Pattern detected but confidence (${patternResult.confidenceScore}%) is below threshold`,
+          variant: "destructive"
+        });
       }
       
       return detectedInfo;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to detect payday pattern');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to detect payday pattern';
+      setError(errorMessage);
+      setStatus('error');
+      
+      toast({
+        title: "Error detecting pattern",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      
+      console.error('Error detecting payday pattern:', err);
       return null;
-    } finally {
-      setIsDetecting(false);
     }
-  }, [customerId, orderHistory, enableAutoDetection, toast]);
+  }, [customerId, orderHistory, enableAutoDetection, confidenceThreshold, createTimestamp, toast]);
   
-  // Update payday information
+  /**
+   * Update payday information for a customer
+   */
   const updatePaydayInfo = useCallback(async (info: Omit<PaydayInfo, 'lastUpdated'>) => {
     if (!customerId) return false;
+    
+    setStatus('loading');
     
     try {
       const success = await CustomerPaydayService.syncCustomerPaydayData(
@@ -127,48 +184,101 @@ export function usePaydayDetection({
       );
       
       if (success) {
-        // Fetch updated information
+        // Refresh payday information
         await fetchPaydayInfo();
         
         toast({
           title: "Success",
           description: "Payday information updated successfully"
         });
+        
+        return true;
       }
       
-      return success;
+      setStatus('error');
+      setError('Failed to update payday information');
+      return false;
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(errorMessage);
+      setStatus('error');
+      
       toast({
         title: "Error updating payday information",
-        description: err instanceof Error ? err.message : "An unknown error occurred",
+        description: errorMessage,
         variant: "destructive"
       });
+      
+      console.error('Error updating payday information:', err);
       return false;
     }
   }, [customerId, fetchPaydayInfo, toast]);
   
-  // Calculate next payday date
+  /**
+   * Calculate the next payday date for a customer
+   */
   const calculateNextPaydayDate = useCallback(() => {
     if (!paydayInfo) return null;
     
-    return CustomerPaydayService.calculateNextPayday(
-      paydayInfo.paydayDate,
-      paydayInfo.paydayFrequency
-    );
+    try {
+      return CustomerPaydayService.calculateNextPayday(
+        paydayInfo.paydayDate,
+        paydayInfo.paydayFrequency
+      );
+    } catch (err) {
+      console.error('Error calculating next payday date:', err);
+      return null;
+    }
   }, [paydayInfo]);
   
-  // Calculate optimal reminder date
+  /**
+   * Calculate the optimal reminder date based on product run-out date
+   */
   const calculateOptimalReminderDate = useCallback((productRunOutDate: Date) => {
     if (!paydayInfo) return null;
     
-    return CustomerPaydayService.calculateOptimalReminderDate(
-      paydayInfo.paydayDate,
-      paydayInfo.paydayFrequency,
-      productRunOutDate
-    );
+    try {
+      return CustomerPaydayService.calculateOptimalReminderDate(
+        paydayInfo.paydayDate,
+        paydayInfo.paydayFrequency,
+        productRunOutDate
+      );
+    } catch (err) {
+      console.error('Error calculating optimal reminder date:', err);
+      return null;
+    }
   }, [paydayInfo]);
   
-  // Initial fetch
+  /**
+   * Schedule reminders for a customer based on their payday
+   */
+  const schedulePaydayReminders = useCallback(async (productIds: string[]) => {
+    if (!customerId || !paydayInfo || productIds.length === 0) return false;
+    
+    setStatus('loading');
+    
+    try {
+      // This would need to be implemented in CustomerPaydayService
+      const result = await CustomerPaydayService.schedulePaydayReminders(
+        customerId, 
+        productIds, 
+        paydayInfo.paydayDate, 
+        paydayInfo.paydayFrequency
+      );
+      
+      setStatus('success');
+      return result;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to schedule reminders';
+      setError(errorMessage);
+      setStatus('error');
+      
+      console.error('Error scheduling payday reminders:', err);
+      return false;
+    }
+  }, [customerId, paydayInfo]);
+  
+  // Initialize payday info on mount or when customerId changes
   useEffect(() => {
     if (customerId) {
       fetchPaydayInfo();
@@ -177,13 +287,16 @@ export function usePaydayDetection({
   
   return {
     paydayInfo,
-    isLoading,
-    isDetecting,
+    status,
+    isLoading: status === 'loading',
+    isDetecting: status === 'detecting',
+    isError: status === 'error',
     error,
     detectPaydayPattern,
     updatePaydayInfo,
     refreshPaydayInfo: fetchPaydayInfo,
     calculateNextPaydayDate,
-    calculateOptimalReminderDate
+    calculateOptimalReminderDate,
+    schedulePaydayReminders
   };
 }

@@ -75,4 +75,26 @@ export class CustomerPaydayService {
   ): PaydayPattern | null {
     return PaydayService.detectPaydayPattern(purchaseDates);
   }
+  
+  /**
+   * Schedules reminders for a customer based on their payday pattern
+   * @param customerId The Shopify customer ID
+   * @param productIds Array of product IDs to schedule reminders for
+   * @param paydayDate Customer's payday date (1-31)
+   * @param paydayFrequency Customer's payday frequency
+   * @returns Promise resolving to success status
+   */
+  public static async schedulePaydayReminders(
+    customerId: string,
+    productIds: string[],
+    paydayDate: number,
+    paydayFrequency: 'monthly' | 'biweekly' | 'weekly'
+  ): Promise<boolean> {
+    return PaydayService.scheduleBatchReminders(
+      customerId,
+      productIds,
+      paydayDate,
+      paydayFrequency
+    );
+  }
 }
