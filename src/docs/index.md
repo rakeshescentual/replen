@@ -16,6 +16,7 @@ Welcome to the comprehensive documentation for the Replenish Reminder app. This 
 - [Technical Architecture](./technical/Architecture.md)
 - [Dependencies](./technical/Dependencies.md)
 - [Performance Optimization](./technical/PerformanceOptimization.md)
+- [Shopify API Changelog](./technical/ShopifyApiChangelog.md)
 - [API Reference](./developers/APIReference.md)
 
 ### Development
@@ -34,6 +35,8 @@ Welcome to the comprehensive documentation for the Replenish Reminder app. This 
 - [Verification Checklist](./implementation/VerificationChecklist.md)
 - [Team Structure](./implementation/TeamStructure.md)
 - [Implementation Guide](./product/ImplementationGuide.md)
+- [Payday Pattern Service](./implementation/PaydayPatternService.md)
+- [Payday Calculation Service](./implementation/PaydayCalculationService.md)
 
 ### Quick Reference
 - [Quick Overview](./QuickOverview.md)
@@ -61,9 +64,14 @@ If you're planning future development, refer to the [Future Roadmap](./roadmap/F
 - Integrated with Customer Segments API for payday-based customer grouping
 - Implemented Checkout Extensions for collecting payday information during purchase
 - Updated to support Shopify's 2025.01 API version
+- Added support for in-checkout personalized recommendations
+- Enhanced GDPR compliance features as per Shopify's latest requirements
 
 ### Gadget.dev Enhancements
 - Implemented Type-Safe Route Parameters for all API endpoints
 - Configured Environment Variable Groups for multi-environment support
 - Leveraged Enhanced Shopify Connection capabilities
 - Added improved security features including Role-Based Access Control
+- Enabled global edge deployment for improved performance
+- Implemented real-time analytics integration
+- Added support for multi-region data storage compliance

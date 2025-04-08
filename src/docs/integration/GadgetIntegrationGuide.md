@@ -1,510 +1,304 @@
 
-# Gadget Integration Guide
+# Gadget.dev Integration Guide
 
-## Introduction
+This document provides a comprehensive overview of how the Replenish Reminder app integrates with Gadget.dev to power its backend functionality.
 
-This guide provides comprehensive instructions for integrating the Replenish Reminder app with Gadget.dev's backend services. Gadget.dev serves as the primary backend platform for processing product lifespan data, customer payday information, and value metrics calculations.
+## Overview
 
-## Latest Gadget.dev Features (2025)
+Gadget.dev serves as the backend platform for the Replenish Reminder app, providing:
 
-### Type-Safe Route Parameters
+1. API endpoints for data access and management
+2. Shopify integration through enhanced Shopify connections
+3. Data processing for AI predictions and value metrics
+4. Environment-specific configurations via Environment Variable Groups
+5. Type-safe route parameters for API requests
+6. Edge computing capabilities for global performance
+7. Role-based access control for security
 
-Gadget.dev now supports fully typed route parameters, enhancing developer experience and reducing runtime errors. The Replenish Reminder app leverages this feature for all API endpoints to ensure type safety throughout the application.
+## Environment Configuration
+
+The app uses Gadget.dev's Environment Variable Groups to maintain separate configurations for:
+
+- Development
+- Staging 
+- Production
+
+Each environment has its own:
+- API base URL
+- Shopify storefront domain
+- Security settings
+- Feature flags
+- Logging configuration
+- Performance monitoring thresholds
+- Regional deployment settings
+
+## API Endpoints
+
+| Endpoint | Purpose | Parameters | Response |
+|----------|---------|------------|----------|
+| `/products/{id}` | Get product details | `id`, `includes[]` | Product with specified includes |
+| `/products/category/{category}` | Get products by category | `category`, `limit`, `sort` | Array of products |
+| `/customers/{customerId}/recommendations` | Get personalized recommendations | `customerId`, `productTypes[]` | Recommended products |
+| `/customers/{customerId}/payday-info` | Manage customer payday information | `paydayDate`, `frequency` | Payday information |
+| `/shopify/metafields` | Sync product metafields | `productId`, `namespace`, `metafields` | Success status |
+| `/analytics/replenishment` | Get replenishment analytics | `startDate`, `endDate`, `metrics[]` | Analytics data |
+| `/customers/{customerId}/segments` | Manage customer segments | `segmentIds[]`, `operation` | Updated segments |
+| `/shopify/webhooks` | Configure Shopify webhooks | `topic`, `address`, `format` | Webhook registration |
+
+## Type-Safe Route Parameters
+
+The application uses TypeScript interfaces to ensure type safety when making API requests:
 
 ```typescript
-// Example of typed route parameters
-export type ProductValueParams = {
-  productId: string;
-  includeMetafields?: boolean;
-  calculationMethod?: 'standard' | 'enhanced';
-};
+export interface ProductRouteParams {
+  id: string;
+  includes?: string[];
+}
 
-// Using typed parameters in Gadget.dev routes
-gadget.routes.get<ProductValueParams>(
-  "/products/:productId/value", 
-  { middleware: [gadget.auth.requireApiKey] },
-  async (req, res) => {
-    const { productId, includeMetafields = false, calculationMethod = 'standard' } = req.params;
-    // Implementation using typed parameters
-  }
-);
+export interface CategoryRouteParams {
+  category: CategoryId;
+  limit?: number;
+  sort?: 'value' | 'match' | 'price';
+}
+
+export interface CustomerRouteParams {
+  customerId: string;
+  productTypes?: CategoryId[];
+}
+
+export interface PaydayRouteParams {
+  customerId: string;
+  paydayDate?: number;
+  frequency?: 'weekly' | 'biweekly' | 'monthly';
+  includeHistory?: boolean;
+}
+
+export interface AnalyticsRouteParams {
+  startDate: string;
+  endDate: string;
+  metrics: ('conversion' | 'revenue' | 'engagement')[];
+  resolution?: 'day' | 'week' | 'month';
+}
 ```
 
-### Environment Variable Groups
+## Core Features Powered by Gadget.dev
 
-The latest version of Gadget.dev introduces Environment Variable Groups, allowing for environment-specific configuration across development, staging, and production environments. This feature is essential for maintaining separate configurations for Shopify API endpoints, credentials, and feature flags.
+### AI Prediction Engine
 
-```typescript
-// Environment-specific configuration via Gadget.dev
-const config = {
-  development: {
-    apiUrl: 'https://escentual-dev.myshopify.com/api',
-    featureFlags: {
-      enableEnhancedValueMetrics: true,
-      useTestCustomers: true
-    }
-  },
-  production: {
-    apiUrl: 'https://escentual.myshopify.com/api',
-    featureFlags: {
-      enableEnhancedValueMetrics: false,
-      useTestCustomers: false
-    }
-  }
-};
+- Stores and processes customer purchase history
+- Calculates product lifespan predictions
+- Implements machine learning to improve predictions
+- Manages internet data mining results
+- Adapts to seasonal usage patterns
+- Integrates with global product knowledge base
 
-// Access environment-specific configuration
-const env = gadget.env.current(); // 'development', 'staging', or 'production'
-const apiUrl = config[env].apiUrl;
-```
+### Payday Alignment System
 
-### Enhanced Shopify Connection
+- Tracks customer payday information
+- Calculates optimal reminder timing
+- Schedules Klaviyo email sends
+- Adapts to changing payday patterns
+- Creates customer segments based on payday cycles
+- Optimizes marketing spend based on payment timing
 
-Gadget.dev has improved its Shopify connection capabilities with support for Shopify's 2025.01 API version and the new Admin API GraphQL features. This includes:
+### Value Metrics
 
-1. **Metafield Definition API**: Create and manage product metafield definitions programmatically
-2. **Enhanced Customer Data API**: Access comprehensive customer purchase patterns
-3. **Subscription API 2.0**: Improved subscription management capabilities
-4. **Performance Analytics API**: Access to storefront performance metrics
+- Stores value scores and cost efficiency metrics
+- Calculates cost-per-day figures
+- Processes internet data to enhance value assessment
+- Compares value across similar products
+- Generates value-based product recommendations
+- Provides competitive value analysis
 
-### Improved Security Features
+### Customer Segmentation
 
-New security features in Gadget.dev include:
+- Creates and manages dynamic customer segments
+- Tags customers with segment identifiers
+- Synchronizes segments with Shopify and Klaviyo
+- Generates segment-specific marketing campaigns
+- Tracks segment performance metrics
+- Identifies high-value customer segments
 
-1. **Role-Based Access Control**: Fine-grained permission management for API endpoints
-2. **Enhanced API Key Management**: Rotation schedules and usage tracking
-3. **Audit Logging**: Comprehensive logging of all API interactions
-4. **GDPR Compliance Tools**: Built-in data management for GDPR requirements
+## Implementation Steps
 
-## Integration Steps
+1. **Create Gadget.dev Project**
+   - Set up a new project in Gadget.dev
+   - Configure Shopify connection with appropriate scopes
+   - Set up Klaviyo connection for email integration
+   - Configure environment settings
 
-### 1. Setting Up Your Gadget.dev Project
+2. **Configure Environment Variable Groups**
+   - Create separate configurations for dev/staging/production
+   - Set appropriate API endpoints and security settings
+   - Configure feature flags for each environment
+   - Set up logging and monitoring thresholds
 
-1. Create a new Gadget.dev application:
-   - Log in to your Gadget.dev dashboard
-   - Click "New Application"
-   - Select "Shopify Integration" template
-   - Name your application (e.g., "Escentual-Replenishment")
+3. **Set Up Data Models**
+   - Product Lifespan model
+   - Customer Purchase History model
+   - Payday Information model
+   - Replenishment Schedule model
+   - Value Metrics model
+   - Internet Data Sources model
 
-2. Configure Shopify connection:
-   - Enter your Shopify store URL
-   - Authorize the requested scopes:
-     - `read_products`
-     - `read_customers`
-     - `read_orders`
-     - `write_metafields`
+4. **Implement API Endpoints**
+   - Create RESTful endpoints following Gadget.dev best practices
+   - Implement data validation and error handling
+   - Set up proper authentication and authorization
+   - Configure rate limiting and caching policies
 
-3. Set up environment variables:
-   - Create separate environment groups for development, staging, and production
-   - Configure Shopify API credentials for each environment
-   - Set up Klaviyo API keys if using email integration
+5. **Configure Shopify Connection**
+   - Set up metafield definitions for value metrics and lifespan data
+   - Configure webhooks for order and customer events
+   - Implement product catalog synchronization
+   - Set up customer data integration
 
-### 2. Data Model Configuration
+## Security Configuration
 
-Create the following models in your Gadget.dev application:
+### Authentication
 
-#### Product Lifespan Model
-- `productId` (String): Shopify product ID
-- `estimatedLifespan` (Number): Days the product typically lasts
-- `confidenceScore` (Number): Confidence in the lifespan estimate (0-1)
-- `dataSources` (Array): Sources used for lifespan calculation
-- `lastUpdated` (DateTime): When the estimate was last updated
+- API key authentication for server-to-server communication
+- OAuth 2.0 for user authentication
+- JWT token validation for session management
+- Scoped access tokens for limited permissions
 
-#### Customer Payday Model
-- `customerId` (String): Shopify customer ID
-- `paydayDate` (Number): Day of month for payday (1-31)
-- `paydayFrequency` (String): 'weekly', 'biweekly', or 'monthly'
-- `confidenceScore` (Number): Confidence in payday detection (0-1)
-- `lastUpdated` (DateTime): When the payday data was last updated
+### Authorization
 
-#### Reminder Schedule Model
-- `customerId` (String): Shopify customer ID
-- `productId` (String): Shopify product ID
-- `estimatedDepletionDate` (DateTime): When product will run out
-- `reminderDate` (DateTime): When to send the reminder
-- `status` (String): 'scheduled', 'sent', or 'clicked'
+- Role-based access control for admin functions
+- Resource-level permissions for data access
+- IP allowlisting for sensitive operations
+- Audit logging for security events
 
-### 3. API Implementation
+### Data Protection
 
-Create the following API endpoints in your Gadget.dev application:
+- Encryption at rest for sensitive data
+- Encryption in transit using TLS 1.3
+- GDPR compliance features for customer data
+- Data retention policies by data type
 
-#### Value Metrics API
-```typescript
-gadget.routes.get<{ productId: string }>(
-  "/products/:productId/value-metrics", 
-  { middleware: [gadget.auth.requireApiKey] },
-  async (req, res) => {
-    const product = await gadget.connections.shopify.get(
-      `/products/${req.params.productId}.json`
-    );
-    
-    const valueMetrics = await calculateValueMetrics(product.product);
-    
-    res.json({ valueMetrics });
-  }
-);
-```
+## Edge Computing Configuration
 
-#### Customer Payday API
-```typescript
-gadget.routes.post<{ customerId: string }>(
-  "/customers/:customerId/payday", 
-  { middleware: [gadget.auth.requireApiKey] },
-  async (req, res) => {
-    const { paydayDate, frequency } = req.body;
-    
-    await gadget.models.CustomerPayday.findOne({
-      filter: { customerId: req.params.customerId }
-    }).upsert({
-      create: {
-        customerId: req.params.customerId,
-        paydayDate,
-        paydayFrequency: frequency,
-        confidenceScore: 1.0, // Direct input has high confidence
-        lastUpdated: new Date()
-      },
-      update: {
-        paydayDate,
-        paydayFrequency: frequency,
-        confidenceScore: 1.0,
-        lastUpdated: new Date()
-      }
-    });
-    
-    res.json({ success: true });
-  }
-);
-```
+Gadget.dev's edge computing capabilities are leveraged for:
 
-#### Reminder Scheduling API
-```typescript
-gadget.routes.post<{ customerId: string }>(
-  "/customers/:customerId/reminders/schedule", 
-  { middleware: [gadget.auth.requireApiKey] },
-  async (req, res) => {
-    const { productId } = req.body;
-    
-    // Get customer payday information
-    const paydayInfo = await gadget.models.CustomerPayday.findOne({
-      filter: { customerId: req.params.customerId }
-    });
-    
-    // Get product lifespan information
-    const lifespanInfo = await gadget.models.ProductLifespan.findOne({
-      filter: { productId }
-    });
-    
-    // Calculate optimal reminder date
-    const reminderDate = calculateReminderDate(
-      new Date(), 
-      lifespanInfo.estimatedLifespan,
-      paydayInfo.paydayDate,
-      paydayInfo.paydayFrequency
-    );
-    
-    // Create reminder schedule
-    await gadget.models.ReminderSchedule.create({
-      customerId: req.params.customerId,
-      productId,
-      estimatedDepletionDate: new Date(Date.now() + lifespanInfo.estimatedLifespan * 86400000),
-      reminderDate,
-      status: 'scheduled'
-    });
-    
-    res.json({ 
-      success: true,
-      reminderDate 
-    });
-  }
-);
-```
+- Global content delivery
+- Location-based personalization
+- Regional data compliance
+- Low-latency API responses
+- Distributed computation for performance
 
-### 4. Scheduled Jobs
+## Testing the Integration
 
-Set up the following scheduled jobs in your Gadget.dev application:
+- Verify API connections in all environments
+- Test authentication and authorization
+- Validate data flow between Shopify and Gadget.dev
+- Confirm metafield updates work correctly
+- Test environment-specific configurations
+- Verify webhook reliability and payload processing
+- Test edge function performance in different regions
+- Validate data consistency across environments
 
-#### Daily Reminder Processing
-```typescript
-gadget.jobs.schedule("process-daily-reminders", "0 8 * * *", async () => {
-  const today = new Date();
+## Common Issues and Troubleshooting
+
+- API Key authentication problems
+  - Verify API key is correctly configured in your environment
+  - Check that the key has the necessary permissions
   
-  // Find reminders scheduled for today
-  const reminders = await gadget.models.ReminderSchedule.findMany({
-    filter: {
-      reminderDate: { lte: today },
-      status: "scheduled"
-    }
-  });
+- Environment detection issues
+  - Confirm environment variables are correctly set
+  - Verify hostname detection logic works correctly
   
-  // Process each reminder
-  for (const reminder of reminders) {
-    // Get product and customer details
-    const product = await gadget.connections.shopify.get(
-      `/products/${reminder.productId}.json`
-    );
-    
-    const customer = await gadget.connections.shopify.get(
-      `/customers/${reminder.customerId}.json`
-    );
-    
-    // Send reminder email via Klaviyo (if integrated)
-    if (process.env.KLAVIYO_API_KEY) {
-      await sendKlaviyoEmail(
-        customer.customer.email,
-        "replenishment_reminder",
-        {
-          product_name: product.product.title,
-          product_image: product.product.image?.src,
-          depletion_date: reminder.estimatedDepletionDate,
-          reorder_url: `https://escentual.com/products/${product.product.handle}`
-        }
-      );
-    }
-    
-    // Update reminder status
-    await gadget.models.ReminderSchedule.update(reminder.id, {
-      status: "sent"
-    });
-  }
+- Rate limiting considerations
+  - Implement exponential backoff for retries
+  - Use request batching for multiple operations
+  
+- Data synchronization delays
+  - Set appropriate timeout values for webhook responses
+  - Implement retry logic for failed synchronizations
+  
+- Webhook reliability
+  - Use webhook verification to validate Shopify requests
+  - Implement idempotent webhook handling
+
+## Best Practices
+
+- Use type-safe route parameters for all API requests
+- Leverage environment-specific configurations
+- Implement comprehensive error handling
+- Use the GadgetEnvironmentService for environment detection
+- Cache frequently accessed data to improve performance
+- Implement proper error handling and logging
+- Follow Gadget.dev's security best practices
+- Use Edge Functions for performance-critical operations
+- Implement proper GDPR compliance features
+- Set up proper monitoring and alerting
+
+## Migration from Previous Versions
+
+When migrating from previous versions of Gadget.dev:
+
+1. Update the Gadget.dev client library to the latest version
+2. Refactor API calls to use type-safe route parameters
+3. Update authentication to use the latest security features
+4. Implement Environment Variable Groups for configuration
+5. Migrate webhook handlers to the latest format
+6. Update Shopify connection to use the latest API version
+7. Implement Edge Functions for performance-critical operations
+
+## Advanced Features
+
+### Real-Time Data Processing
+
+Configure real-time data processing using Gadget.dev's event system:
+
+```javascript
+// Example of setting up a real-time data processor
+app.events.on('order.created', async (event, context) => {
+  const { order } = event.data;
+  await processNewOrderData(order);
+  await updateCustomerPurchaseHistory(order.customer);
+  await scheduleReplenishmentReminders(order);
 });
 ```
 
-#### Weekly Payday Detection
-```typescript
-gadget.jobs.schedule("detect-customer-paydays", "0 0 * * 0", async () => {
-  // Get customers with recent orders
-  const orders = await gadget.connections.shopify.get(
-    `/orders.json?status=any&created_at_min=${getDateXDaysAgo(30)}`
-  );
-  
-  // Group orders by customer
-  const customerOrders = groupOrdersByCustomer(orders.orders);
-  
-  // Detect payday patterns for each customer
-  for (const [customerId, orders] of Object.entries(customerOrders)) {
-    if (orders.length >= 2) {
-      const { 
-        paydayDate, 
-        paydayFrequency,
-        confidenceScore 
-      } = detectPaydayPattern(orders);
-      
-      if (confidenceScore > 0.6) {
-        // Update customer payday information
-        await gadget.models.CustomerPayday.findOne({
-          filter: { customerId }
-        }).upsert({
-          create: {
-            customerId,
-            paydayDate,
-            paydayFrequency,
-            confidenceScore,
-            lastUpdated: new Date()
-          },
-          update: {
-            paydayDate,
-            paydayFrequency,
-            confidenceScore,
-            lastUpdated: new Date()
-          }
-        });
-      }
+### Multi-Region Deployment
+
+Configure multi-region deployment for global performance:
+
+```javascript
+// Example configuration in Gadget.dev settings
+{
+  "deployment": {
+    "regions": ["us-east", "europe-west", "asia-east"],
+    "strategy": "closest-region",
+    "fallbackRegion": "us-east"
+  }
+}
+```
+
+### Advanced Caching
+
+Implement advanced caching strategies:
+
+```javascript
+// Example of configuring cache settings in Gadget.dev
+{
+  "caching": {
+    "products": {
+      "ttl": 3600,
+      "strategy": "stale-while-revalidate"
+    },
+    "customerData": {
+      "ttl": 300,
+      "strategy": "cache-first"
     }
   }
-});
-```
-
-### 5. Frontend Integration
-
-To integrate your Replenish Reminder frontend with Gadget.dev:
-
-1. Install the Gadget.dev client library:
-```bash
-npm install @gadgetinc/react-client-core
-```
-
-2. Configure the client with environment-specific settings:
-```typescript
-import { createGadgetClient, GadgetProvider } from '@gadgetinc/react-client-core';
-
-const getEnvironmentConfig = () => {
-  const hostname = window.location.hostname;
-  if (hostname.includes('dev') || hostname.includes('localhost')) {
-    return {
-      environment: 'development',
-      apiKey: process.env.GADGET_DEV_API_KEY
-    };
-  } else if (hostname.includes('staging')) {
-    return {
-      environment: 'staging',
-      apiKey: process.env.GADGET_STAGING_API_KEY
-    };
-  } else {
-    return {
-      environment: 'production',
-      apiKey: process.env.GADGET_PRODUCTION_API_KEY
-    };
-  }
-};
-
-const { environment, apiKey } = getEnvironmentConfig();
-
-const client = createGadgetClient({
-  environment,
-  apiKey
-});
-
-// Wrap your app with the provider
-function App() {
-  return (
-    <GadgetProvider client={client}>
-      {/* Your app components */}
-    </GadgetProvider>
-  );
 }
 ```
 
-3. Use the client in your components:
-```typescript
-import { useGadget } from '@gadgetinc/react-client-core';
+## Resources
 
-function ProductValueMetrics({ productId }) {
-  const gadget = useGadget();
-  const [valueMetrics, setValueMetrics] = useState(null);
-  
-  useEffect(() => {
-    async function fetchValueMetrics() {
-      const response = await gadget.api.get(`/products/${productId}/value-metrics`);
-      setValueMetrics(response.data.valueMetrics);
-    }
-    
-    fetchValueMetrics();
-  }, [productId]);
-  
-  // Render value metrics
-}
-```
-
-## Latest Shopify Changelog Integration (2025)
-
-### Metafield Value Types
-
-Shopify has expanded metafield value types to include new structured data types. Replenish Reminder now uses these enhanced metafield types for storing product lifespan and value metrics data:
-
-```typescript
-// Update product metafields with the new value types
-async function updateProductMetafields(productId, lifespanData) {
-  return gadget.connections.shopify.post(
-    `/products/${productId}/metafields.json`,
-    {
-      metafield: {
-        namespace: "replenish_reminder",
-        key: "product_lifespan_data",
-        value: JSON.stringify({
-          estimated_days: lifespanData.estimatedLifespan,
-          confidence_score: lifespanData.confidenceScore,
-          data_sources: lifespanData.dataSources,
-          last_updated: new Date().toISOString()
-        }),
-        type: "json"  // Using the enhanced JSON type
-      }
-    }
-  );
-}
-```
-
-### Customer Segments API
-
-Leverage Shopify's Customer Segments API for creating dynamic customer groups based on payday patterns:
-
-```typescript
-// Create a segment for customers with specific payday date
-async function createPaydaySegment(paydayDate) {
-  return gadget.connections.shopify.post(
-    `/customer_segments.json`,
-    {
-      customer_segment: {
-        name: `Payday ${paydayDate} Customers`,
-        query: `tag:payday-${paydayDate}`,
-        shop_id: process.env.SHOPIFY_SHOP_ID
-      }
-    }
-  );
-}
-
-// Tag customer with their payday date
-async function tagCustomerWithPayday(customerId, paydayDate) {
-  return gadget.connections.shopify.put(
-    `/customers/${customerId}.json`,
-    {
-      customer: {
-        id: customerId,
-        tags: `payday-${paydayDate}`
-      }
-    }
-  );
-}
-```
-
-### Shopify Checkout Extensions
-
-Integrate with Shopify's Checkout Extensions to collect payday information during checkout:
-
-```typescript
-// Example checkpoint extension in Gadget.dev
-gadget.extensions.checkout.create({
-  name: "Payday Information Collection",
-  target: "purchase.checkout.payment-method.render-after",
-  metafields: [
-    {
-      namespace: "replenish_reminder",
-      key: "payday_information",
-      label: "When do you typically get paid?",
-      type: "single_line_text_field"
-    }
-  ]
-});
-```
-
-## Testing and Verification
-
-To verify your Gadget.dev integration is working correctly:
-
-1. **API Testing**:
-   - Use the Gadget.dev API Explorer to test each endpoint
-   - Verify responses match expected formats
-   - Test error handling with invalid inputs
-
-2. **Job Testing**:
-   - Run scheduled jobs manually to verify functionality
-   - Check outputs in the Gadget.dev logs
-   - Verify data is correctly updated in the database
-
-3. **Frontend Testing**:
-   - Test API calls from the frontend
-   - Verify data is displayed correctly
-   - Test error handling and loading states
-
-## Troubleshooting Common Issues
-
-### Authentication Failures
-- Verify API keys are correctly set for each environment
-- Check that Shopify connection is properly authorized
-- Ensure proper middleware is applied to protected routes
-
-### Data Synchronization Issues
-- Check Shopify webhook configurations
-- Verify Gadget.dev jobs are running as scheduled
-- Inspect job logs for errors or failures
-
-### Performance Problems
-- Enable Gadget.dev Performance Monitoring
-- Check for N+1 query patterns
-- Implement pagination for large data sets
-- Use caching for frequently accessed data
-
-## Support and Resources
-
-- Gadget.dev Documentation: https://docs.gadget.dev
-- Shopify Developer Documentation: https://shopify.dev
-- Replenish Reminder Support: support@replenishreminder.com
+- [Gadget.dev Documentation](https://docs.gadget.dev)
+- [Shopify API Documentation](https://shopify.dev/api)
+- [Klaviyo API Documentation](https://developers.klaviyo.com)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [Edge Computing Best Practices](https://docs.gadget.dev/edge-computing)
