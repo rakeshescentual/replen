@@ -1,11 +1,11 @@
 
 /**
- * Hook for detecting customer payday patterns using the latest Gadget.dev features
+ * Hook for detecting customer payday patterns
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { GadgetPaydayService } from "@/utils/gadget/GadgetPaydayService";
-import { PaydayService } from "@/utils/payday/PaydayService";
+import { CustomerPaydayService } from "@/utils/CustomerPaydayService";
+import { PaydayPattern, PaydayInfo as PaydayInfoType } from "@/utils/payday/PaydayTypes";
 
 export interface UsePaydayDetectionProps {
   customerId?: string;
@@ -24,7 +24,6 @@ export interface PaydayInfo {
 
 /**
  * Hook for detecting and managing customer payday information
- * using the latest Gadget.dev features
  */
 export function usePaydayDetection({
   customerId,
@@ -46,17 +45,14 @@ export function usePaydayDetection({
     setError(null);
     
     try {
-      const data = await GadgetPaydayService.getCustomerPaydayInfo({
-        customerId,
-        includeConfidence: true
-      });
+      const data = await CustomerPaydayService.getCustomerPaydayData(customerId);
       
       if (data) {
         setPaydayInfo({
           paydayDate: data.paydayDate,
           paydayFrequency: data.paydayFrequency,
-          confidenceScore: data.confidenceScore || 0,
-          lastUpdated: data.lastUpdated
+          confidenceScore: 0, // Not provided by this API, default to 0
+          lastUpdated: new Date().toISOString() // Use current time as we don't get this from the API
         });
       }
     } catch (err) {
@@ -84,8 +80,8 @@ export function usePaydayDetection({
       // Extract purchase dates from order history
       const purchaseDates = orderHistory.map(order => new Date(order.processed_at));
       
-      // Use our PaydayPatternService to detect patterns
-      const patternResult = PaydayService.detectPaydayPattern(purchaseDates);
+      // Use our PaydayPatternService (via CustomerPaydayService) to detect patterns
+      const patternResult = CustomerPaydayService.detectPaydayPattern(purchaseDates);
       
       if (!patternResult) {
         toast({
@@ -99,7 +95,8 @@ export function usePaydayDetection({
       const detectedInfo: PaydayInfo = {
         paydayDate: patternResult.paydayDate,
         paydayFrequency: patternResult.paydayFrequency,
-        confidenceScore: patternResult.confidenceScore
+        confidenceScore: patternResult.confidenceScore,
+        lastUpdated: new Date().toISOString()
       };
       
       setPaydayInfo(detectedInfo);
@@ -119,25 +116,24 @@ export function usePaydayDetection({
   }, [customerId, orderHistory, enableAutoDetection, toast]);
   
   // Update payday information
-  const updatePaydayInfo = useCallback(async (info: Omit<PaydayInfo, 'confidenceScore' | 'lastUpdated'>) => {
+  const updatePaydayInfo = useCallback(async (info: Omit<PaydayInfo, 'lastUpdated'>) => {
     if (!customerId) return false;
     
     try {
-      const success = await GadgetPaydayService.updateCustomerPaydayInfo({
+      const success = await CustomerPaydayService.syncCustomerPaydayData(
         customerId,
-        paydayDate: info.paydayDate,
-        paydayFrequency: info.paydayFrequency
-      });
+        info.paydayDate,
+        info.paydayFrequency
+      );
       
       if (success) {
-        // Create a customer segment based on payday date
-        await GadgetPaydayService.createPaydaySegment(info.paydayDate);
-        
-        // Tag customer with payday date
-        await GadgetPaydayService.tagCustomerWithPayday(customerId, info.paydayDate);
-        
         // Fetch updated information
         await fetchPaydayInfo();
+        
+        toast({
+          title: "Success",
+          description: "Payday information updated successfully"
+        });
       }
       
       return success;
@@ -150,6 +146,27 @@ export function usePaydayDetection({
       return false;
     }
   }, [customerId, fetchPaydayInfo, toast]);
+  
+  // Calculate next payday date
+  const calculateNextPaydayDate = useCallback(() => {
+    if (!paydayInfo) return null;
+    
+    return CustomerPaydayService.calculateNextPayday(
+      paydayInfo.paydayDate,
+      paydayInfo.paydayFrequency
+    );
+  }, [paydayInfo]);
+  
+  // Calculate optimal reminder date
+  const calculateOptimalReminderDate = useCallback((productRunOutDate: Date) => {
+    if (!paydayInfo) return null;
+    
+    return CustomerPaydayService.calculateOptimalReminderDate(
+      paydayInfo.paydayDate,
+      paydayInfo.paydayFrequency,
+      productRunOutDate
+    );
+  }, [paydayInfo]);
   
   // Initial fetch
   useEffect(() => {
@@ -165,6 +182,8 @@ export function usePaydayDetection({
     error,
     detectPaydayPattern,
     updatePaydayInfo,
-    refreshPaydayInfo: fetchPaydayInfo
+    refreshPaydayInfo: fetchPaydayInfo,
+    calculateNextPaydayDate,
+    calculateOptimalReminderDate
   };
 }
