@@ -69,12 +69,6 @@ export class GadgetPaydayService {
         console.error("API error details:", error);
       }
       
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to fetch payday information",
-        variant: "destructive"
-      });
-      
       return null;
     }
   }

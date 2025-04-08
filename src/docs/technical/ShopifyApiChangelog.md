@@ -15,6 +15,11 @@ The 2025.01 API version introduces significant enhancements to Shopify's metafie
 - **Ratings**: Built-in rating system with averages and count
 - **Multi-line Text**: Rich text formatting options
 - **Reference Lists**: Collections of references to other resources
+- **Dimensional Values**: Support for measurements with units
+- **Date Ranges**: Store date periods with validation
+- **File References**: Direct links to media in Shopify CDN
+- **URL Lists**: Collections of validated URLs
+- **Product Variants**: Direct references to specific variants
 
 #### Metafield Definition API
 ```graphql
@@ -87,6 +92,12 @@ Shopify has introduced a powerful Customer Segments API that allows for dynamic 
 - Automatic segment membership updates when customer data changes
 - Segment analytics for behavior tracking
 - Integration with marketing campaigns
+- Scheduled segment refreshing
+- Advanced query language for segment definition
+- Customer counts and segment overlap metrics
+- Segment-based discount eligibility
+- Event-triggered segment updates
+- Multi-store segment synchronization
 
 #### API Example
 ```graphql
@@ -135,12 +146,24 @@ The 2025.01 API introduces Checkout Extensions - a framework for extending the S
 - Collect additional information during checkout
 - Create personalized checkout experiences
 - Implement post-purchase upsell opportunities
+- Dynamic shipping options based on customer data
+- Custom discount application logic
+- Enhanced cart validation rules
+- Fraud prevention extensions
+- Custom payment method flows
+- Multi-page checkout customization
 
 #### Extension Points
 - `purchase.checkout.block.render`: Add custom blocks to checkout
 - `purchase.checkout.payment-method.render-after`: Add UI after payment method
 - `purchase.checkout.shipping-method.render-after`: Add UI after shipping method
 - `purchase.checkout.contact.render-after`: Add UI after contact information
+- `purchase.checkout.shipping-address.render-after`: Add UI after shipping address
+- `purchase.checkout.cart-line-item.render-after`: Add UI after each cart item
+- `purchase.checkout.cart-line-list.render-after`: Add UI after entire cart
+- `purchase.checkout.customer.accounts.sign-in.render-after`: Add UI after sign-in
+- `purchase.thank-you.details.render-after`: Add UI after order confirmation
+- `purchase.checkout.header.render`: Customize checkout header
 
 #### Implementation for Payday Collection
 ```typescript
@@ -182,6 +205,14 @@ Shopify has revamped its Subscription API to provide more flexible and powerful 
 - Flexible billing schedules
 - Customer self-service portal
 - Subscription analytics and reporting
+- Upcoming payment notifications
+- Pre-billing payment validation
+- Customizable retry logic for failed payments
+- Promotion and discount application
+- Subscription bundling capabilities
+- Subscription migration and upgrading
+- Skip, pause, and resume functionality
+- Subscription product swapping
 
 #### API Example
 ```graphql
@@ -280,6 +311,14 @@ The Performance Analytics API provides access to storefront performance metrics:
 - Checkout flow analytics
 - Search performance metrics
 - Real-time monitoring capabilities
+- Conversion funnel analytics
+- A/B test performance comparisons
+- Geographic performance distribution
+- Mobile vs desktop performance analysis
+- Browser-specific metrics
+- Network performance indicators
+- Core Web Vitals measurements
+- User journey performance analytics
 
 #### API Example
 ```graphql
@@ -343,6 +382,72 @@ const fetchPerformanceMetrics = async () => {
   
   return response.body.data.shop.analytics.performance.edges.map(edge => edge.node);
 };
+```
+
+### Shopify Functions
+
+Shopify has expanded its Shopify Functions capability for customizing core commerce logic:
+
+#### Key Features
+- Custom discount application logic
+- Personalized product recommendations
+- Dynamic shipping rate calculations
+- Payment processor logic customization
+- Inventory allocation strategies
+- Tax calculation customization
+- Cart validation rules
+- Order routing logic
+- Customer segmentation logic
+- Custom checkout workflows
+
+#### Implementation Example
+```typescript
+// Creating a custom discount function
+export function run(input) {
+  const { cart, discountNode } = input;
+  
+  // Check if this is a payday for the customer
+  const customerTags = cart.buyerIdentity?.customer?.tags || [];
+  const paydayTag = customerTags.find(tag => tag.startsWith('payday-'));
+  
+  if (!paydayTag) {
+    return {
+      discounts: []
+    };
+  }
+  
+  // Extract payday date from tag
+  const paydayDate = parseInt(paydayTag.replace('payday-', ''), 10);
+  const today = new Date();
+  const currentDate = today.getDate();
+  
+  // If today is customer's payday or within 3 days after, apply discount
+  if (Math.abs(currentDate - paydayDate) <= 3) {
+    return {
+      discounts: [
+        {
+          targets: [
+            {
+              productVariant: {
+                id: cart.lines[0].merchandise.id
+              }
+            }
+          ],
+          value: {
+            percentage: {
+              value: "10.0"
+            }
+          },
+          message: "Payday special! 10% off today!"
+        }
+      ]
+    };
+  }
+  
+  return {
+    discounts: []
+  };
+}
 ```
 
 ## Migration Guide
@@ -436,6 +541,12 @@ The following features are deprecated in the 2025.01 API version and will be rem
 2. **Customer Save API** - Use the Customer Update API instead
 3. **Legacy Webhook API** - Use the Event Subscriptions API instead
 4. **Product Variant Inventory API** - Use the Inventory Level API instead
+5. **Deprecated GraphQL Fields** - Several fields marked as deprecated in 2024.01 have been removed
+6. **Legacy Admin API Endpoints** - Several REST endpoints have been replaced with GraphQL equivalents
+7. **Script Tags** - Use App Blocks instead
+8. **Legacy App Bridge** - Use App Bridge 2.0
+9. **Asset API** - Use Theme API instead
+10. **Bulk Operations V1** - Use Bulk Operations V2 with enhanced error handling
 
 ## Best Practices
 
@@ -443,18 +554,26 @@ The following features are deprecated in the 2025.01 API version and will be rem
    - The GraphQL API provides more flexibility and efficiency
    - Request only the data you need to improve performance
    - Use fragments for common data patterns
+   - Implement proper error handling for GraphQL responses
+   - Use the cost explorer to optimize query costs
 
 2. **Implement Rate Limit Handling**
    - Monitor and respect Shopify's rate limits
    - Implement exponential backoff for retry logic
    - Use bulk operations for large data sets
+   - Leverage GraphQL connections for pagination
+   - Cache frequently accessed data
 
 3. **Keep API Keys Secure**
    - Store API credentials in secure environment variables
    - Implement proper authentication for all API requests
    - Regularly rotate API keys
+   - Use scoped access tokens with minimum required permissions
+   - Implement IP restrictions where appropriate
 
 4. **Stay Updated with API Changes**
    - Subscribe to the Shopify Developer changelog
    - Test your app against release candidate API versions
    - Plan for migrations before API versions are deprecated
+   - Join the Shopify Partners program for early access
+   - Participate in developer preview programs
