@@ -50,7 +50,7 @@
 
 ## Backend Integration
 
-### Gadget.dev
+### Gadget.dev (2025)
 Gadget.dev serves as the backend-as-a-service platform for Shopify integration, providing:
 
 - **Environment Variable Groups**
@@ -71,12 +71,34 @@ Gadget.dev serves as the backend-as-a-service platform for Shopify integration, 
   - Handles rate limiting and API version management
   - Supports metafield management for extended product data
   - Implements webhooks for real-time data synchronization
+  - Compatible with Shopify's 2025.01 API version
 
 - **Security Features**
   - Role-based access control
   - API key management
   - Request logging and monitoring
   - GDPR compliance utilities
+
+### Shopify API (2025.01)
+Latest Shopify API features integrated via Gadget.dev:
+
+- **Enhanced Metafield Types**
+  - JSON structured data support
+  - Color swatches and rating values
+  - Multi-line text fields with formatting
+  - Reference metafields for product relationships
+
+- **Customer Segments API**
+  - Dynamic segment creation based on customer attributes
+  - Real-time segment membership updates
+  - Segment analytics and insights
+  - Integration with marketing campaigns
+
+- **Checkout Extensions**
+  - Custom UI elements in checkout flow
+  - Additional data collection during checkout
+  - Personalization options based on customer data
+  - Post-purchase upsell opportunities
 
 ### Klaviyo
 Email marketing platform for customer communications, offering:
@@ -143,3 +165,24 @@ The application supports multiple deployment environments with specific configur
 - **Code Splitting** - Dynamic imports for route-based code splitting
 - **Asset Optimization** - Image compression and lazy loading
 - **Cache Management** - Strategic caching policies for API responses
+- **Edge Functions** - Distributed computing for global performance
+
+## New in 2025
+
+- **@gadgetinc/react-client-core** - Official React client for Gadget.dev
+  - Enhanced hooks for data fetching
+  - Type-safe API request handling
+  - Environment-aware configuration
+  - Optimistic UI updates
+
+- **@shopify/hydrogen-react** - Shopify's React framework components
+  - Storefront API integration
+  - Cart management
+  - Product variant selection
+  - Media optimization
+
+- **@tanstack/react-query v5** - Latest version with enhanced features
+  - Streaming server responses
+  - Automatic garbage collection
+  - Enhanced devtools
+  - Improved mutation handling
