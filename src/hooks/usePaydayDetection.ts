@@ -1,10 +1,9 @@
-
 /**
  * Hook for detecting customer payday patterns using the latest Gadget.dev features
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { GadgetPaydayService } from "@/utils/GadgetPaydayService";
+import { GadgetPaydayService } from "@/utils/gadget/GadgetPaydayService";
 
 export interface UsePaydayDetectionProps {
   customerId?: string;
