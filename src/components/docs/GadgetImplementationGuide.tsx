@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, Heading, Text } from "@/components/ui/shadcn";
-import { Database, Server, Code, GitBranch, CheckCircle } from "lucide-react";
+import { Database, Server, Code, GitBranch, CheckCircle, Globe, Shield, Zap } from "lucide-react";
 
 /**
  * Component providing detailed information about Gadget.dev implementation
@@ -115,6 +115,13 @@ model ProductLifespan {
                     <p className="text-xs text-gray-600">Processes GDPR data requests (required for Built for Shopify)</p>
                   </div>
                 </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">detectPaydayPattern</p>
+                    <p className="text-xs text-gray-600">Analyzes purchase history to detect customer payday patterns</p>
+                  </div>
+                </li>
               </ul>
             </div>
             
@@ -203,7 +210,7 @@ export async function calculateProductValue(
           </div>
         </div>
         
-        <div className="bg-white p-5 rounded-lg border border-blue-100">
+        <div className="bg-white p-5 rounded-lg border border-blue-100 mb-6">
           <h3 className="text-base font-medium mb-3 text-blue-800 flex items-center gap-2">
             <GitBranch className="h-5 w-5 text-blue-600" />
             Integration With Shopify
@@ -275,6 +282,221 @@ export async function calculateProductValue(
             </div>
           </div>
         </div>
+        
+        <div className="bg-white p-5 rounded-lg border border-blue-100 mb-6">
+          <h3 className="text-base font-medium mb-3 text-blue-800 flex items-center gap-2">
+            <Globe className="h-5 w-5 text-blue-600" />
+            Environment Configuration
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="p-3 bg-gray-50 rounded border border-gray-100">
+              <h4 className="text-sm font-medium text-gray-800 mb-2">Environment Variable Groups</h4>
+              <p className="text-sm text-gray-700 mb-3">
+                Configure environment-specific settings using Gadget.dev's Environment Variable Groups:
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Development environment</p>
+                    <p className="text-xs text-gray-600">Configure settings optimized for local development and testing</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Staging environment</p>
+                    <p className="text-xs text-gray-600">Pre-production settings for testing before release</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Production environment</p>
+                    <p className="text-xs text-gray-600">Optimized settings for live customers with enhanced security</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="p-3 bg-gray-50 rounded border border-gray-100">
+              <h4 className="text-sm font-medium text-gray-800 mb-2">Sample Environment Configuration</h4>
+              <pre className="text-xs bg-gray-100 p-3 rounded overflow-x-auto">
+{`// Example configuration in GadgetEnvironmentService.ts
+this.environmentConfigs = {
+  development: {
+    apiBaseUrl: 'https://escentual-value-metrics-dev.gadget.app/api',
+    shopifyStorefrontDomain: 'escentual-dev.myshopify.com',
+    useSecureConnection: false,
+    loggingEnabled: true,
+    featureFlags: {
+      enableDetailedLogging: true,
+      useTestData: true,
+      showDebugTools: true
+    }
+  },
+  production: {
+    apiBaseUrl: 'https://escentual-value-metrics.gadget.app/api',
+    shopifyStorefrontDomain: 'escentual.myshopify.com',
+    useSecureConnection: true,
+    loggingEnabled: false,
+    featureFlags: {
+      enableDetailedLogging: false,
+      useTestData: false,
+      showDebugTools: false
+    }
+  }
+}`}
+              </pre>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-5 rounded-lg border border-blue-100 mb-6">
+          <h3 className="text-base font-medium mb-3 text-blue-800 flex items-center gap-2">
+            <Shield className="h-5 w-5 text-blue-600" />
+            Security Implementation
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="p-3 bg-gray-50 rounded border border-gray-100">
+              <h4 className="text-sm font-medium text-gray-800 mb-2">Role-Based Access Control</h4>
+              <p className="text-sm text-gray-700 mb-3">
+                Implement Gadget.dev's Role-Based Access Control for secure API endpoints:
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Admin role</p>
+                    <p className="text-xs text-gray-600">Full access to all app functionality and settings</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Store manager role</p>
+                    <p className="text-xs text-gray-600">Access to reporting and customer data, but not settings</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Customer role</p>
+                    <p className="text-xs text-gray-600">Limited access to personal data and recommendations</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">API role</p>
+                    <p className="text-xs text-gray-600">Restricted access for external service integrations</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="p-3 bg-gray-50 rounded border border-gray-100">
+              <h4 className="text-sm font-medium text-gray-800 mb-2">API Authentication</h4>
+              <p className="text-sm text-gray-700 mb-3">
+                Secure API endpoints with proper authentication:
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">API key authentication</p>
+                    <p className="text-xs text-gray-600">For server-to-server communication with limited permissions</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Session-based authentication</p>
+                    <p className="text-xs text-gray-600">For user sessions via Shopify App Bridge</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Webhook verification</p>
+                    <p className="text-xs text-gray-600">HMAC signature verification for incoming webhooks</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-5 rounded-lg border border-blue-100">
+          <h3 className="text-base font-medium mb-3 text-blue-800 flex items-center gap-2">
+            <Zap className="h-5 w-5 text-blue-600" />
+            Performance Optimization
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="p-3 bg-gray-50 rounded border border-gray-100">
+              <h4 className="text-sm font-medium text-gray-800 mb-2">Edge Computing Configuration</h4>
+              <p className="text-sm text-gray-700 mb-3">
+                Leverage Gadget.dev's edge computing capabilities for optimal performance:
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Global edge deployment</p>
+                    <p className="text-xs text-gray-600">Deploy functions to edge locations for minimal latency</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Regional data compliance</p>
+                    <p className="text-xs text-gray-600">Configure data storage locations for regulatory compliance</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Caching strategy</p>
+                    <p className="text-xs text-gray-600">Implement edge caching for frequently accessed data</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="p-3 bg-gray-50 rounded border border-gray-100">
+              <h4 className="text-sm font-medium text-gray-800 mb-2">Database Optimization</h4>
+              <p className="text-sm text-gray-700 mb-3">
+                Optimize database performance in Gadget.dev:
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Indexing strategy</p>
+                    <p className="text-xs text-gray-600">Create appropriate indexes for common query patterns</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Connection pooling</p>
+                    <p className="text-xs text-gray-600">Configure optimal database connection settings</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Query optimization</p>
+                    <p className="text-xs text-gray-600">Structure queries for efficiency and minimal data transfer</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </Card>
       
       <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
@@ -290,6 +512,9 @@ export async function calculateProductValue(
           <li className="text-sm text-indigo-700">Simplified deployment and scaling</li>
           <li className="text-sm text-indigo-700">Developer-friendly environment with built-in logging</li>
           <li className="text-sm text-indigo-700">Streamlined data modeling with relationships</li>
+          <li className="text-sm text-indigo-700">Edge computing for global performance</li>
+          <li className="text-sm text-indigo-700">Type-safe API route parameters</li>
+          <li className="text-sm text-indigo-700">Environment Variable Groups for multi-environment support</li>
         </ul>
       </div>
     </div>

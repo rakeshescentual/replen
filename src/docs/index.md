@@ -18,6 +18,7 @@ Welcome to the comprehensive documentation for the Replenish Reminder app. This 
 - [Performance Optimization](./technical/PerformanceOptimization.md)
 - [Shopify API Changelog](./technical/ShopifyApiChangelog.md)
 - [API Reference](./developers/APIReference.md)
+- [Type-Safe Route Parameters](./technical/GadgetTypeRoutes.md)
 
 ### Development
 - [Development Timeline](./development/Timeline.md)
@@ -25,6 +26,7 @@ Welcome to the comprehensive documentation for the Replenish Reminder app. This 
 ### Integration Guides
 - [Klaviyo Integration](./integration/KlaviyoIntegration.md)
 - [Gadget Integration Guide](./integration/GadgetIntegrationGuide.md)
+- [Environment Variable Management](./integration/EnvironmentVariableManagement.md)
 
 ### Future Plans
 - [Future Roadmap](./roadmap/FutureRoadmap.md)
@@ -66,6 +68,10 @@ If you're planning future development, refer to the [Future Roadmap](./roadmap/F
 - Updated to support Shopify's 2025.01 API version
 - Added support for in-checkout personalized recommendations
 - Enhanced GDPR compliance features as per Shopify's latest requirements
+- Implemented support for Shopify Functions for custom pricing and discounts
+- Added integration with Shopify Markets for multi-region support
+- Leveraged Shopify Flow for automated reminder workflows
+- Enhanced Admin API integration for detailed analytics reporting
 
 ### Gadget.dev Enhancements
 - Implemented Type-Safe Route Parameters for all API endpoints
@@ -75,3 +81,6 @@ If you're planning future development, refer to the [Future Roadmap](./roadmap/F
 - Enabled global edge deployment for improved performance
 - Implemented real-time analytics integration
 - Added support for multi-region data storage compliance
+- Enhanced webhook reliability with automatic retries and logging
+- Implemented database performance optimizations for large catalogs
+- Added support for custom Gadget actions for complex business logic
