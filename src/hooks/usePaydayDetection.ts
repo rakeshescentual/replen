@@ -1,9 +1,11 @@
+
 /**
  * Hook for detecting customer payday patterns using the latest Gadget.dev features
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { GadgetPaydayService } from "@/utils/gadget/GadgetPaydayService";
+import { PaydayService } from "@/utils/payday/PaydayService";
 
 export interface UsePaydayDetectionProps {
   customerId?: string;
@@ -79,56 +81,38 @@ export function usePaydayDetection({
     setError(null);
     
     try {
-      // In a real implementation, we would analyze order dates for patterns
-      // For demonstration, we'll use a simplified algorithm
+      // Extract purchase dates from order history
+      const purchaseDates = orderHistory.map(order => new Date(order.processed_at));
       
-      // Sort orders by date
-      const sortedOrders = [...orderHistory].sort(
-        (a, b) => new Date(a.processed_at).getTime() - new Date(b.processed_at).getTime()
-      );
+      // Use our PaydayPatternService to detect patterns
+      const patternResult = PaydayService.detectPaydayPattern(purchaseDates);
       
-      // Extract days of month for each order
-      const daysOfMonth = sortedOrders.map(order => {
-        return new Date(order.processed_at).getDate();
-      });
+      if (!patternResult) {
+        toast({
+          title: "No pattern detected",
+          description: "Couldn't detect a clear payday pattern from order history",
+          variant: "destructive"
+        });
+        return null;
+      }
       
-      // Find most frequent day (simplified)
-      const dayCounts: Record<number, number> = {};
-      let mostFrequentDay = 1;
-      let highestCount = 0;
-      
-      daysOfMonth.forEach(day => {
-        dayCounts[day] = (dayCounts[day] || 0) + 1;
-        if (dayCounts[day] > highestCount) {
-          highestCount = dayCounts[day];
-          mostFrequentDay = day;
-        }
-      });
-      
-      // Calculate confidence score (simplified)
-      const confidenceScore = Math.min(0.95, highestCount / daysOfMonth.length);
-      
-      // Determine frequency (simplified)
-      // This would be more complex in a real implementation
-      let frequency: PaydayFrequency = 'monthly';
-      
-      // Create detected payday info
       const detectedInfo: PaydayInfo = {
-        paydayDate: mostFrequentDay,
-        paydayFrequency: frequency,
-        confidenceScore
+        paydayDate: patternResult.paydayDate,
+        paydayFrequency: patternResult.paydayFrequency,
+        confidenceScore: patternResult.confidenceScore
       };
       
       setPaydayInfo(detectedInfo);
       
       // Update in backend if auto-detection is enabled
-      if (enableAutoDetection && confidenceScore > 0.7) {
+      if (enableAutoDetection && patternResult.confidenceScore > 70) {
         await updatePaydayInfo(detectedInfo);
       }
       
       return detectedInfo;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to detect payday pattern');
+      return null;
     } finally {
       setIsDetecting(false);
     }

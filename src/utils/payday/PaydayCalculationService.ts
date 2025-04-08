@@ -2,6 +2,8 @@
 /**
  * Service for calculating payday-related dates
  */
+import { OptimalReminderParams } from './PaydayTypes';
+
 export class PaydayCalculationService {
   /**
    * Calculates the next payday date for a customer
@@ -48,16 +50,12 @@ export class PaydayCalculationService {
   
   /**
    * Calculates the optimal reminder date based on payday and product lifespan
-   * @param paydayDate Customer's payday date
-   * @param paydayFrequency Payment frequency
-   * @param productRunOutDate Predicted date when product will run out
+   * @param params Object containing payday info and product run-out date
    * @returns Date when reminder should be sent
    */
-  public static calculateOptimalReminderDate(
-    paydayDate: number,
-    paydayFrequency: 'monthly' | 'biweekly' | 'weekly',
-    productRunOutDate: Date
-  ): Date {
+  public static calculateOptimalReminderDate(params: OptimalReminderParams): Date {
+    const { paydayDate, paydayFrequency, productRunOutDate } = params;
+    
     // Get the next payday
     const nextPayday = this.calculateNextPayday(paydayDate, paydayFrequency);
     

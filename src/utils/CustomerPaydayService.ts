@@ -1,7 +1,6 @@
 
-import { PaydayAPIService } from "./payday/PaydayAPIService";
-import { PaydayCalculationService } from "./payday/PaydayCalculationService";
-import { PaydayPatternService } from "./payday/PaydayPatternService";
+import { PaydayService } from "./payday/PaydayService";
+import { PaydayPattern } from "./payday/PaydayTypes";
 
 /**
  * Service for managing customer payday data
@@ -20,7 +19,7 @@ export class CustomerPaydayService {
     paydayDate: number,
     paydayFrequency: 'monthly' | 'biweekly' | 'weekly' = 'monthly'
   ): Promise<boolean> {
-    return PaydayAPIService.syncCustomerPaydayData(customerId, paydayDate, paydayFrequency);
+    return PaydayService.updateCustomerPaydayData(customerId, paydayDate, paydayFrequency);
   }
   
   /**
@@ -31,7 +30,7 @@ export class CustomerPaydayService {
   public static async getCustomerPaydayData(
     customerId: string
   ): Promise<{ paydayDate: number; paydayFrequency: 'monthly' | 'biweekly' | 'weekly' } | null> {
-    return PaydayAPIService.getCustomerPaydayData(customerId);
+    return PaydayService.getCustomerPaydayData(customerId);
   }
   
   /**
@@ -44,7 +43,7 @@ export class CustomerPaydayService {
     currentPaydayDate: number,
     paydayFrequency: 'monthly' | 'biweekly' | 'weekly' = 'monthly'
   ): Date {
-    return PaydayCalculationService.calculateNextPayday(currentPaydayDate, paydayFrequency);
+    return PaydayService.calculateNextPayday(currentPaydayDate, paydayFrequency);
   }
   
   /**
@@ -59,7 +58,11 @@ export class CustomerPaydayService {
     paydayFrequency: 'monthly' | 'biweekly' | 'weekly',
     productRunOutDate: Date
   ): Date {
-    return PaydayCalculationService.calculateOptimalReminderDate(paydayDate, paydayFrequency, productRunOutDate);
+    return PaydayService.calculateOptimalReminderDate({
+      paydayDate,
+      paydayFrequency,
+      productRunOutDate
+    });
   }
   
   /**
@@ -69,11 +72,7 @@ export class CustomerPaydayService {
    */
   public static detectPaydayPattern(
     purchaseDates: Date[]
-  ): { 
-    paydayDate: number; 
-    paydayFrequency: 'monthly' | 'biweekly' | 'weekly';
-    confidenceScore: number;
-  } | null {
-    return PaydayPatternService.detectPaydayPattern(purchaseDates);
+  ): PaydayPattern | null {
+    return PaydayService.detectPaydayPattern(purchaseDates);
   }
 }

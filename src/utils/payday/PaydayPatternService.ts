@@ -2,6 +2,8 @@
 /**
  * Service for detecting payday patterns from customer data
  */
+import { PaydayPattern } from './PaydayTypes';
+
 export class PaydayPatternService {
   /**
    * Identifies customer payday patterns from purchase history
@@ -10,11 +12,7 @@ export class PaydayPatternService {
    */
   public static detectPaydayPattern(
     purchaseDates: Date[]
-  ): { 
-    paydayDate: number; 
-    paydayFrequency: 'monthly' | 'biweekly' | 'weekly';
-    confidenceScore: number;
-  } | null {
+  ): PaydayPattern | null {
     if (purchaseDates.length < 3) {
       return null; // Not enough data
     }

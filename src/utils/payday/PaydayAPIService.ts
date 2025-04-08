@@ -1,10 +1,11 @@
 
+/**
+ * Service for interacting with payday-related APIs
+ */
 import { toast } from "@/hooks/use-toast";
 import { GadgetEnvironmentService } from "../GadgetEnvironmentService";
+import { PaydayInfo } from "./PaydayTypes";
 
-/**
- * Service for interacting with payday-related APIs via Gadget.dev
- */
 export class PaydayAPIService {
   private static readonly BASE_API_ENDPOINT = '/api/shopify/customer/payday';
   
@@ -18,7 +19,7 @@ export class PaydayAPIService {
   }
   
   /**
-   * Synchronizes a customer's payday date with Shopify customer metafields via Gadget.dev
+   * Synchronizes a customer's payday date with Shopify customer metafields
    * @param customerId The Shopify customer ID
    * @param paydayDate Day of month (1-31)
    * @param paydayFrequency Payment frequency (monthly, biweekly, weekly)
@@ -26,7 +27,7 @@ export class PaydayAPIService {
    */
   public static async syncCustomerPaydayData(
     customerId: string,
-    paydayDate: number, // Day of month (1-31)
+    paydayDate: number,
     paydayFrequency: 'monthly' | 'biweekly' | 'weekly' = 'monthly'
   ): Promise<boolean> {
     try {
@@ -49,8 +50,6 @@ export class PaydayAPIService {
         return true;
       }
       
-      // In a production implementation using Gadget.dev, we would use fetch or a Gadget client
-      // to make the API call to update the customer's metafields with payday information
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -89,13 +88,13 @@ export class PaydayAPIService {
   }
   
   /**
-   * Retrieves a customer's payday information from Gadget.dev
+   * Retrieves a customer's payday information
    * @param customerId The Shopify customer ID
    * @returns Promise resolving to customer payday information
    */
   public static async getCustomerPaydayData(
     customerId: string
-  ): Promise<{ paydayDate: number; paydayFrequency: 'monthly' | 'biweekly' | 'weekly' } | null> {
+  ): Promise<PaydayInfo | null> {
     try {
       const environmentService = GadgetEnvironmentService.getInstance();
       const endpoint = `${this.getApiEndpoint()}/${customerId}`;
