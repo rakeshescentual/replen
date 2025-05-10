@@ -1,10 +1,12 @@
-
 import { PaydayService } from "./payday/PaydayService";
 import { PaydayPattern } from "./payday/PaydayTypes";
+import { GadgetMCPIntegration } from "./gadget/GadgetMCPIntegration";
 
 /**
  * Service for managing customer payday data
  * Acts as a facade to coordinate between the specialized payday services
+ * 
+ * Updated to support MCP Server integration for the Shopify Dev Assistant
  */
 export class CustomerPaydayService {
   /**
@@ -19,7 +21,23 @@ export class CustomerPaydayService {
     paydayDate: number,
     paydayFrequency: 'monthly' | 'biweekly' | 'weekly' = 'monthly'
   ): Promise<boolean> {
-    return PaydayService.updateCustomerPaydayData(customerId, paydayDate, paydayFrequency);
+    const result = await PaydayService.updateCustomerPaydayData(customerId, paydayDate, paydayFrequency);
+    
+    // When successful, also submit this data to the MCP Server for AI training
+    if (result) {
+      try {
+        await GadgetMCPIntegration.submitPaydayPatternData(customerId, {
+          paydayDate,
+          paydayFrequency,
+          confidenceScore: 100 // Direct customer input has 100% confidence
+        });
+      } catch (err) {
+        // Don't fail the operation if MCP integration fails
+        console.warn("Failed to submit payday data to MCP Server:", err);
+      }
+    }
+    
+    return result;
   }
   
   /**
@@ -73,7 +91,20 @@ export class CustomerPaydayService {
   public static detectPaydayPattern(
     purchaseDates: Date[]
   ): PaydayPattern | null {
-    return PaydayService.detectPaydayPattern(purchaseDates);
+    const pattern = PaydayService.detectPaydayPattern(purchaseDates);
+    
+    // If a pattern was detected successfully, submit to MCP Server for learning
+    if (pattern && pattern.confidenceScore > 60) {
+      try {
+        // We don't await this to keep the function synchronous
+        GadgetMCPIntegration.submitPaydayPatternData("anonymous", pattern)
+          .catch(err => console.warn("Failed to submit anonymous pattern data to MCP:", err));
+      } catch (err) {
+        console.warn("Error preparing MCP data submission:", err);
+      }
+    }
+    
+    return pattern;
   }
   
   /**
@@ -96,5 +127,53 @@ export class CustomerPaydayService {
       paydayDate,
       paydayFrequency
     );
+  }
+  
+  /**
+   * Processes a natural language query about payday patterns using MCP Server
+   * @param query The query string
+   * @param customerId Optional customer ID to provide context
+   * @returns Promise resolving to the AI response
+   */
+  public static async askPaydayQuestion(
+    query: string,
+    customerId?: string
+  ): Promise<{ answer: string; confidence: number }> {
+    try {
+      // Get customer data if available to provide context
+      let context: Record<string, any> = {};
+      
+      if (customerId) {
+        const paydayData = await this.getCustomerPaydayData(customerId);
+        if (paydayData) {
+          context.paydayInfo = paydayData;
+          
+          // Calculate next payday for additional context
+          const nextPayday = this.calculateNextPayday(
+            paydayData.paydayDate,
+            paydayData.paydayFrequency
+          );
+          context.nextPayday = nextPayday.toISOString();
+        }
+      }
+      
+      // Send the query to MCP Server
+      const response = await GadgetMCPIntegration.processQuery({
+        query,
+        customerId,
+        context
+      });
+      
+      return {
+        answer: response.answer,
+        confidence: response.confidence
+      };
+    } catch (error) {
+      console.error("Error processing payday query:", error);
+      return {
+        answer: "I'm sorry, but I encountered an error processing your question about payday patterns.",
+        confidence: 0
+      };
+    }
   }
 }
